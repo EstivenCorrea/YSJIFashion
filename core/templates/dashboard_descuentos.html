@@ -1,0 +1,629 @@
+{% extends 'dashboard_base.html' %}
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+
+<div class="container mt-5">
+    <!-- ===== FORMULARIO PARA CREAR DESCUENTO ===== -->
+    <div class="card shadow border-0 mb-5">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center px-4">
+            <h4 class="mb-0">Registrar Nuevo Descuento</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST" class="row g-3" id="formCrear">
+                {% csrf_token %}
+                <div class="col-md-4">
+                    <label for="nombre" class="form-label fw-bold">Nombre del descuento</label>
+                    <input type="text" name="nombre" id="nombre" class="form-control" required>
+                    <small class="error-message" id="err-nombre" style="color:red;display:none"></small>
+                </div>
+                <div class="col-md-3">
+                    <label for="codigo" class="form-label fw-bold">Código</label>
+                    <input type="text" name="codigo" id="codigo" class="form-control" placeholder="Solo números" required pattern="\d+">
+                    <small class="error-message" id="err-codigo" style="color:red;display:none"></small>
+                </div>
+                <div class="col-md-3">
+                    <label for="tipo" class="form-label fw-bold">Tipo</label>
+                    <select name="tipo" id="tipo" class="form-select" required>
+                        <option value="">Seleccionar...</option>
+                        <option value="porcentaje">Porcentaje (%)</option>
+                        <option value="monto">Monto fijo ($)</option>
+                    </select>
+                    <small class="error-message" id="err-tipo" style="color:red;display:none"></small>
+                </div>
+                <div class="col-md-2">
+                    <label for="valor" class="form-label fw-bold">Valor</label>
+                    <input type="number" name="valor" id="valor" class="form-control" step="0.01" required>
+                    <small class="error-message" id="err-valor" style="color:red;display:none"></small>
+                </div>
+                <div class="col-md-3">
+                    <label for="fecha_inicio" class="form-label fw-bold">Fecha de inicio</label>
+                    <input type="date" name="fecha_inicio" id="fecha_inicio" class="form-control" required>
+                    <small class="error-message" id="err-fecha-inicio" style="color:red;display:none"></small>
+                </div>
+                <div class="col-md-3">
+                    <label for="fecha_fin" class="form-label fw-bold">Fecha de fin</label>
+                    <input type="date" name="fecha_fin" id="fecha_fin" class="form-control" required>
+                    <small class="error-message" id="err-fecha-fin" style="color:red;display:none"></small>
+                </div>
+                <div class="col-md-3">
+                    <label for="activo" class="form-label fw-bold">Estado</label>
+                    <select name="activo" id="activo" class="form-select">
+                        <option value="1" selected>Activo</option>
+                        <option value="0">Inactivo</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button class="btn btn-dark w-100" type="submit" id="btn-crear">
+                        <i class="bi bi-plus-circle"></i> Agregar Descuento
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== TABLA DE DESCUENTOS REGISTRADOS ===== -->
+    <div class="card shadow border-0">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center px-4">
+            <h4 class="mb-0">Descuentos Registrados</h4>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0 align-middle text-center">
+                    <thead class="text-white" style="background-color: #000000;">
+                        <tr>
+                            <th>#</th>
+                            <th class="text-start ps-4">Nombre</th>
+                            <th>Código</th>
+                            <th>Tipo</th>
+                            <th>Valor</th>
+                            <th>Inicio</th>
+                            <th>Fin</th>
+                            <th>Activo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for descuento in descuentos %}
+                        <tr>
+                            <td>{{ descuento.id }}</td>
+                            <td class="text-start ps-4">{{ descuento.nombre }}</td>
+                            <td>{{ descuento.codigo|default:"—" }}</td>
+                            <td class="text-capitalize">{{ descuento.get_tipo_display }}</td>
+                            <td>
+                                {% if descuento.tipo == "porcentaje" %}
+                                    {{ descuento.valor }}%
+                                {% else %}
+                                    ${{ descuento.valor }}
+                                {% endif %}
+                            </td>
+                            <td>{{ descuento.fecha_inicio|date:"Y-m-d" }}</td>
+                            <td>{{ descuento.fecha_fin|date:"Y-m-d" }}</td>
+                            <td>
+                                {% if descuento.activo %}
+                                    <span class="badge bg-success">Activo</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Inactivo</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <!-- editar -->
+                                    <button class="btn btn-sm btn-outline-info editar-btn" 
+                                            data-id="{{ descuento.id }}" data-url="{% url 'editar_descuento' descuento.id %}" title="Editar">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+
+                                    <!-- activar/desactivar -->
+                                    <button class="btn btn-sm btn-outline-secondary toggle-btn"
+                                            data-id="{{ descuento.id }}" data-url="{% url 'cambiar_estado_descuento' descuento.id %}" title="Activar/Desactivar">
+                                        <i class="bi bi-power"></i>
+                                    </button>
+
+                                    <!-- eliminar -->
+                                    <button class="btn btn-sm btn-outline-danger eliminar-btn" 
+                                            data-id="{{ descuento.id }}" data-url="{% url 'eliminar_descuento' descuento.id %}" title="Eliminar">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center text-muted py-4">No hay descuentos registrados.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MODAL EDITAR ===== -->
+<div class="modal fade" id="modalEditar" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title">Editar Descuento</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formEditar">
+          {% csrf_token %}
+          <input type="hidden" id="edit_id">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Nombre</label>
+              <input type="text" id="edit_nombre" class="form-control" required>
+              <small class="error-message" id="err-edit-nombre" style="color:red;display:none"></small>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Código</label>
+              <input type="text" id="edit_codigo" class="form-control" placeholder="Solo números">
+              <small class="error-message" id="err-edit-codigo" style="color:red;display:none"></small>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Tipo</label>
+              <select id="edit_tipo" class="form-select" required>
+                <option value="porcentaje">Porcentaje</option>
+                <option value="monto">Monto</option>
+              </select>
+              <small class="error-message" id="err-edit-tipo" style="color:red;display:none"></small>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Valor</label>
+              <input type="number" id="edit_valor" class="form-control" step="0.01" required>
+              <small class="error-message" id="err-edit-valor" style="color:red;display:none"></small>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Activo</label>
+              <select id="edit_activo" class="form-select">
+                <option value="1">Activo</option>
+                <option value="0">Inactivo</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Fecha Inicio</label>
+              <input type="date" id="edit_fecha_inicio" class="form-control" required>
+              <small class="error-message" id="err-edit-fecha-inicio" style="color:red;display:none"></small>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Fecha Fin</label>
+              <input type="date" id="edit_fecha_fin" class="form-control" required>
+              <small class="error-message" id="err-edit-fecha-fin" style="color:red;display:none"></small>
+            </div>
+          </div>
+          <div class="mt-4 text-end">
+            <button type="submit" class="btn btn-dark">Guardar Cambios</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- ===== SCRIPT AJAX ===== -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    // modal bootstrap
+    const modalEditarEl = document.getElementById('modalEditar');
+    const modalEditar = modalEditarEl ? new bootstrap.Modal(modalEditarEl) : null;
+
+    // obtener CSRF del formulario principal (fallback a cookie si no)
+    function getCsrfFromForm() {
+        const tokenInput = document.querySelector('#formCrear input[name="csrfmiddlewaretoken"]');
+        if (tokenInput) return tokenInput.value;
+        // fallback: buscar en cookies
+        const match = document.cookie.match(/csrftoken=([^;]+)/);
+        return match ? match[1] : '';
+    }
+    const CSRF = getCsrfFromForm();
+
+    // ===== EDITAR: abrir modal pidiendo datos (GET) =====
+    document.querySelectorAll(".editar-btn").forEach(btn => {
+        btn.addEventListener("click", async () => {
+            const url = btn.dataset.url; // ruta 'editar_descuento'
+            try {
+                const res = await fetch(url, { method: 'GET', headers: { 'X-Requested-With': 'XMLHttpRequest' }});
+                if (!res.ok) throw new Error('Error al obtener datos');
+                const data = await res.json();
+                // rellenar campos del modal
+                document.getElementById("edit_id").value = data.id || '';
+                document.getElementById("edit_nombre").value = data.nombre || '';
+                document.getElementById("edit_codigo").value = data.codigo || '';
+                document.getElementById("edit_tipo").value = data.tipo || '';
+                document.getElementById("edit_valor").value = data.valor || '';
+                document.getElementById("edit_fecha_inicio").value = data.fecha_inicio || '';
+                document.getElementById("edit_fecha_fin").value = data.fecha_fin || '';
+                document.getElementById("edit_activo").value = data.activo || 0;
+                if (modalEditar) modalEditar.show();
+            } catch (err) {
+                console.error(err);
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'No se pudieron cargar los datos del descuento.'
+                });
+            }
+        });
+    });
+
+    // ===== EDITAR: submit del modal (POST) con SweetAlert2 =====
+    const formEditar = document.getElementById("formEditar");
+    if (formEditar) {
+        formEditar.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            // Validación avanzada en cliente (igual que en crear)
+            let valido = true;
+            // Limpiar errores previos
+            ["err-edit-nombre","err-edit-codigo","err-edit-tipo","err-edit-valor","err-edit-fecha-inicio","err-edit-fecha-fin"].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) { el.textContent = ""; el.style.display = "none"; }
+            });
+
+            const nombre = document.getElementById("edit_nombre").value.trim();
+            const codigo = document.getElementById("edit_codigo").value.trim();
+            const tipo = document.getElementById("edit_tipo").value;
+            const valor = parseFloat(document.getElementById("edit_valor").value);
+            const fechaInicio = document.getElementById("edit_fecha_inicio").value;
+            const fechaFin = document.getElementById("edit_fecha_fin").value;
+
+            if (!nombre || nombre.length < 3) {
+                valido = false;
+                const el = document.getElementById("err-edit-nombre");
+                if (el) { el.textContent = "El nombre es obligatorio (mínimo 3 caracteres)."; el.style.display = "block"; }
+            }
+            if (codigo && !/^\d+$/.test(codigo)) {
+                valido = false;
+                const el = document.getElementById("err-edit-codigo");
+                if (el) { el.textContent = "El código debe contener solo números."; el.style.display = "block"; }
+            }
+            if (!tipo) {
+                valido = false;
+                const el = document.getElementById("err-edit-tipo");
+                if (el) { el.textContent = "Debes seleccionar el tipo de descuento."; el.style.display = "block"; }
+            }
+            if (isNaN(valor) || valor <= 0) {
+                valido = false;
+                const el = document.getElementById("err-edit-valor");
+                if (el) { el.textContent = "El valor debe ser un número positivo."; el.style.display = "block"; }
+            } else if (tipo === "porcentaje" && (valor < 1 || valor > 100)) {
+                valido = false;
+                const el = document.getElementById("err-edit-valor");
+                if (el) { el.textContent = "El porcentaje debe estar entre 1 y 100."; el.style.display = "block"; }
+            }
+            if (!fechaInicio) {
+                valido = false;
+                const el = document.getElementById("err-edit-fecha-inicio");
+                if (el) { el.textContent = "La fecha de inicio es obligatoria."; el.style.display = "block"; }
+            }
+            if (!fechaFin) {
+                valido = false;
+                const el = document.getElementById("err-edit-fecha-fin");
+                if (el) { el.textContent = "La fecha de fin es obligatoria."; el.style.display = "block"; }
+            }
+
+            if (!valido) {
+                await Swal.fire({
+                    icon: 'warning',
+                    title: 'Datos inválidos',
+                    text: 'Revisa los campos marcados en rojo.'
+                });
+                return;
+            }
+
+            const id = document.getElementById("edit_id").value;
+            const url = `/dashboard/descuentos/editar/${id}/`; // coincide con url pattern
+            const formData = new FormData();
+            formData.append('nombre', nombre);
+            formData.append('codigo', codigo);
+            formData.append('tipo', tipo);
+            formData.append('valor', valor);
+            formData.append('fecha_inicio', fechaInicio);
+            formData.append('fecha_fin', fechaFin);
+            formData.append('activo', document.getElementById("edit_activo").value);
+
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': CSRF, 'X-Requested-With': 'XMLHttpRequest' },
+                    body: formData
+                });
+
+                // intentar leer JSON; si no hay JSON (redirect), asumimos éxito
+                let data;
+                try { data = await res.json(); } catch(err){ data = { success: res.ok }; }
+
+                if (data && data.success) {
+                    if (modalEditar) modalEditar.hide();
+                    await Swal.fire({
+                        icon: 'success',
+                        title: 'Actualizado',
+                        text: 'El descuento fue actualizado correctamente.',
+                        timer: 1200,
+                        showConfirmButton: false
+                    });
+                    location.reload();
+                } else {
+                    await Swal.fire({
+                        icon: 'error',
+                        title: 'Error al actualizar',
+                        text: data && data.error ? data.error : 'Ocurrió un error.'
+                    });
+                }
+            } catch (err) {
+                console.error(err);
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error al enviar cambios.'
+                });
+            }
+        });
+    }
+
+    // ===== ELIMINAR: POST con CSRF y SweetAlert2 =====
+    document.querySelectorAll(".eliminar-btn").forEach(btn => {
+        btn.addEventListener("click", async () => {
+            const url = btn.dataset.url; // ruta 'eliminar_descuento'
+            const result = await Swal.fire({
+                title: '¿Eliminar descuento?',
+                text: "Esta acción no se puede deshacer.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            });
+
+            if (!result.isConfirmed) return;
+
+            try {
+                btn.disabled = true;
+                btn.classList.add('opacity-50');
+
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': CSRF,
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                });
+
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+
+                if (!res.ok) {
+                    const text = await res.text();
+                    throw new Error(`HTTP ${res.status}: ${text}`);
+                }
+
+                const data = await res.json();
+                if (data.success) {
+                    await Swal.fire({
+                        icon: 'success',
+                        title: 'Eliminado',
+                        text: 'El descuento fue eliminado correctamente.',
+                        timer: 1200,
+                        showConfirmButton: false
+                    });
+                    location.reload();
+                } else {
+                    await Swal.fire({
+                        icon: 'error',
+                        title: 'No se pudo eliminar',
+                        text: data.error || 'Ocurrió un error desconocido.'
+                    });
+                }
+            } catch (err) {
+                console.error(err);
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error al eliminar. Revisa la consola para más detalles.'
+                });
+            }
+        });
+    });
+
+    // ===== TOGGLE (activar/desactivar) con confirm SweetAlert2 =====
+    document.querySelectorAll(".toggle-btn").forEach(btn => {
+        btn.addEventListener("click", async () => {
+            const url = btn.dataset.url; // ruta 'cambiar_estado_descuento'
+            const confirm = await Swal.fire({
+                title: '¿Cambiar estado del descuento?',
+                text: 'Se alternará entre activo e inactivo.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, cambiar',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#6c757d'
+            });
+            if (!confirm.isConfirmed) return;
+
+            try {
+                btn.disabled = true;
+                btn.classList.add('opacity-50');
+
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': CSRF, 'X-Requested-With': 'XMLHttpRequest' }
+                });
+
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+
+                if (!res.ok) {
+                    const text = await res.text();
+                    throw new Error(`HTTP ${res.status}: ${text}`);
+                }
+
+                const data = await res.json();
+                if (data.success) {
+                    await Swal.fire({
+                        icon: 'success',
+                        title: 'Estado actualizado',
+                        text: data.activo ? 'El descuento está ahora activo.' : 'El descuento fue desactivado.',
+                        timer: 1100,
+                        showConfirmButton: false
+                    });
+                    location.reload();
+                } else {
+                    await Swal.fire({
+                        icon: 'error',
+                        title: 'No se pudo cambiar el estado',
+                        text: data.error || 'Ocurrió un error.'
+                    });
+                }
+            } catch (err) {
+                console.error(err);
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'No se pudo cambiar el estado.'
+                });
+            }
+        });
+    });
+
+    // ===== CREAR: enviar por AJAX y mostrar SweetAlert2 =====
+    const formCrear = document.getElementById('formCrear');
+    if (formCrear) {
+        formCrear.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Validación avanzada en cliente
+            let valido = true;
+            // Limpiar errores previos
+            ["err-nombre","err-codigo","err-tipo","err-valor","err-fecha-inicio","err-fecha-fin"].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) { el.textContent = ""; el.style.display = "none"; }
+            });
+
+            const nombre = formCrear.nombre.value.trim();
+            const codigo = formCrear.codigo.value.trim();
+            const tipo = formCrear.tipo.value;
+            const valor = parseFloat(formCrear.valor.value);
+            const fechaInicio = formCrear.fecha_inicio.value;
+            const fechaFin = formCrear.fecha_fin.value;
+
+            if (!nombre || nombre.length < 3) {
+                valido = false;
+                const el = document.getElementById("err-nombre");
+                if (el) { el.textContent = "El nombre es obligatorio (mínimo 3 caracteres)."; el.style.display = "block"; }
+            }
+            if (!codigo || !/^\d+$/.test(codigo)) {
+                valido = false;
+                const el = document.getElementById("err-codigo");
+                if (el) { el.textContent = "El código es obligatorio y debe contener solo números."; el.style.display = "block"; }
+            }
+            if (!tipo) {
+                valido = false;
+                const el = document.getElementById("err-tipo");
+                if (el) { el.textContent = "Debes seleccionar el tipo de descuento."; el.style.display = "block"; }
+            }
+            if (isNaN(valor) || valor <= 0) {
+                valido = false;
+                const el = document.getElementById("err-valor");
+                if (el) { el.textContent = "El valor debe ser un número positivo."; el.style.display = "block"; }
+            } else if (tipo === "porcentaje" && (valor < 1 || valor > 100)) {
+                valido = false;
+                const el = document.getElementById("err-valor");
+                if (el) { el.textContent = "El porcentaje debe estar entre 1 y 100."; el.style.display = "block"; }
+            }
+            if (!fechaInicio) {
+                valido = false;
+                const el = document.getElementById("err-fecha-inicio");
+                if (el) { el.textContent = "La fecha de inicio es obligatoria."; el.style.display = "block"; }
+            }
+            if (!fechaFin) {
+                valido = false;
+                const el = document.getElementById("err-fecha-fin");
+                if (el) { el.textContent = "La fecha de fin es obligatoria."; el.style.display = "block"; }
+            }
+
+            if (!valido) {
+                await Swal.fire({
+                    icon: 'warning',
+                    title: 'Datos inválidos',
+                    text: 'Revisa los campos marcados en rojo.'
+                });
+                return;
+            }
+
+            // construir FormData (incluye csrf hidden)
+            const formData = new FormData(formCrear);
+            const action = formCrear.getAttribute('action') || window.location.pathname || '/dashboard/descuentos/';
+
+            try {
+                const submitBtn = document.getElementById('btn-crear');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('opacity-50');
+                }
+
+                const res = await fetch(action, {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': CSRF, 'X-Requested-With': 'XMLHttpRequest' },
+                    body: formData
+                });
+
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-50');
+                }
+
+                let data;
+                try { data = await res.json(); } catch(err) { data = { success: res.ok }; }
+
+                if (data && data.success) {
+                    await Swal.fire({
+                        icon: 'success',
+                        title: 'Creado',
+                        text: 'El descuento fue creado correctamente.',
+                        timer: 1200,
+                        showConfirmButton: false
+                    });
+                    formCrear.reset();
+                    location.reload();
+                } else {
+                    await Swal.fire({
+                        icon: 'error',
+                        title: 'No se pudo crear',
+                        text: data.error || 'Ocurrió un error al crear el descuento.'
+                    });
+                }
+            } catch (err) {
+                console.error(err);
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-50');
+                }
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error al crear el descuento. Revisa la consola.'
+                });
+            }
+        });
+    }
+});
+</script>
+
+<style>
+.bg-dark {
+    background-color: #000 !important;
+}
+</style>
+{% endblock %}

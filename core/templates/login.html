@@ -1,0 +1,122 @@
+{% load static %}
+{% load socialaccount %}
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- FontAwesome -->
+    <script src="https://kit.fontawesome.com/64d58efce2.js" crossorigin="anonymous"></script>
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'css/css.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/messages.css' %}" />
+    <title>Iniciar Sesión</title>
+     <link rel="shortcut icon" href="{% static 'images/icon.png' %}">
+  </head>
+  <body>
+
+    <!-- Mensajes Django (sin SweetAlert) -->
+
+    <div class="container {% if form.errors %}sign-up-mode{% endif %}">
+      <div class="forms-container">
+        <div class="signin-signup">
+          
+          <!-- LOGIN -->
+          <form method="POST" id="loginForm" class="sign-in-form" novalidate>
+            {% csrf_token %}
+            <h2 class="title">Iniciar sesión</h2>
+            <div class="input-field">
+              <i class="fas fa-envelope"></i>
+              <input type="email" name="correo" placeholder="Correo Electrónico" required/>
+            </div>
+            <div class="input-field">
+              <i class="fas fa-lock"></i>
+              <input type="password" name="contraseña" placeholder="Contraseña" required/>
+            </div>
+            <button type="submit" name="login" class="btn solid">Entrar</button>
+            <a href="{% url 'index' %}" class="btn btn-back">Regresar</a>
+            <p class="social-text">O </p>
+            <div class="social-media" style="justify-content: center;">
+              <a href="{% provider_login_url 'google' %}" class="google-btn" style="text-decoration: none;">
+                <div style="display: flex; align-items: center; background: white; border: 1px solid #ddd; border-radius: 4px; padding: 8px 16px; cursor: pointer;">
+                  <img src="https://www.google.com/favicon.ico" alt="Google" style="width: 18px; height: 18px; margin-right: 8px;">
+                  <span style="color: #757575; font-family: 'Roboto', sans-serif;">Continuar con Google</span>
+                </div>
+              </a>
+            </div>
+          </form>
+
+          <!-- REGISTRO -->
+          <form method="POST" id="registerForm" class="sign-up-form" novalidate>
+            {% csrf_token %}
+            <h2 class="title">Regístrate</h2>
+            <div class="input-field">
+              <i class="fas fa-user"></i>
+              <input type="text" name="nombre" id="nombre" placeholder="Nombre" required/>
+              <div class="error-message" id="nombre-error"></div>
+            </div>
+            <div class="input-field">
+              <i class="fas fa-envelope"></i>
+              <input type="email" name="correo" id="correo" placeholder="Correo Electrónico" required/>
+              <div class="error-message" id="correo-error"></div>
+            </div>
+            <div class="input-field">
+              <i class="fas fa-lock"></i>
+              <input type="password" name="contraseña" id="contraseña" placeholder="Contraseña" required/>
+              <div class="error-message" id="contraseña-error"></div>
+            </div>
+            <div class="input-field">
+              <i class="fas fa-lock"></i>
+              <input type="password" name="confirmar_contraseña" id="confirmar_contraseña" placeholder="Confirmar Contraseña" required/>
+              <div class="error-message" id="confirmar_contraseña-error"></div>
+            </div>
+
+            <!-- Mostrar contraseña -->
+            <div class="show-password-container password-toggle">
+              <input type="checkbox" id="mostrarContraseña" onclick="mostrarContraseñas()"/>
+              <label for="mostrarContraseña">Mostrar Contraseña</label>
+            </div>
+
+            <button type="submit" name="register" class="btn">Crear Cuenta</button>
+            <p class="social-text">O</p>
+            <div class="social-media" style="justify-content: center;">
+              <a href="{% provider_login_url 'google' %}" class="google-btn" style="text-decoration: none;">
+                <div style="display: flex; align-items: center; background: white; border: 1px solid #ddd; border-radius: 4px; padding: 8px 16px; cursor: pointer;">
+                  <img src="https://www.google.com/favicon.ico" alt="Google" style="width: 18px; height: 18px; margin-right: 8px;">
+                  <span style="color: #757575; font-family: 'Roboto', sans-serif;">Continuar con Google</span>
+                </div>
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="panels-container">
+        <div class="panel left-panel">
+          <div class="content">
+            <h3>¿Nuevo aquí?</h3>
+            <p>Regístrate y accede a todas las funciones de nuestra plataforma.</p>
+            <button class="btn transparent" id="sign-up-btn">Regístrate</button>
+          </div>
+        </div>
+        <div class="panel right-panel">
+          <div class="content">
+            <h3>¿Ya tienes cuenta?</h3>
+            <p>Inicia sesión y continúa disfrutando de nuestros servicios.</p>
+            <button class="btn transparent" id="sign-in-btn">Inicia sesión</button>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{% static 'js/js.js' %}"></script>
+
+   
+  </body>
+</html>
