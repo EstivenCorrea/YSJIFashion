@@ -89,6 +89,15 @@ urlpatterns = [
     #--PayPal--
     path('paypal/confirm/', views.paypal_confirm, name='paypal_confirm'),
     path('pedido/<int:pedido_id>/factura/', views.generar_factura_pedido, name='factura_pedido'),
+    
+    
+     # ======== DASHBOARD DESCUENTOS ========
+    path('dashboard/descuentos/', views.dashboard_descuentos, name='dashboard_descuentos'),
+    path('dashboard/descuentos/editar/<int:id>/', views.editar_descuento, name='editar_descuento'),
+    path('dashboard/descuentos/eliminar/<int:id>/', views.eliminar_descuento, name='eliminar_descuento'),
+    path('dashboard/descuentos/estado/<int:id>/', views.cambiar_estado_descuento, name='cambiar_estado_descuento'),
+
+
 
 ]
 

@@ -25,10 +25,10 @@ from django.utils import timezone
 
 # Modelos
 from .models import (
-    Usuario, Producto, Categoria, Pedido, ImagenProducto, Marca, Proveedor, Mensaje
+    Usuario, Producto, Categoria, Pedido, ImagenProducto, Marca, Proveedor, Mensaje, Descuento
 )
 # Formularios
-from .forms import (RegistroForm, ProductoForm, CategoriaForm, UsuarioForm, MarcaForm, ProveedorForm, MensajeForm
+from .forms import (RegistroForm, ProductoForm, CategoriaForm, UsuarioForm, MarcaForm, ProveedorForm, MensajeForm, DescuentoForm
 )
 
 # ...existing code...
@@ -247,20 +247,50 @@ def login_register_view(request):
                 nombre = form.cleaned_data['nombre']
                 correo = form.cleaned_data['correo']
                 contraseña = make_password(form.cleaned_data['contraseña'])
+                
+                # Verificar correo existente
                 if Usuario.objects.filter(correo=correo).exists():
+                    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                        return JsonResponse({
+                            'success': False,
+                            'message': 'Este correo ya está registrado.'
+                        })
                     form.add_error('correo', 'Este correo ya está registrado.')
-                else:
+                    return render(request, 'login.html', {'form': form})
+                
+                # Crear usuario
+                try:
                     Usuario.objects.create(
                         nombre=nombre,
                         correo=correo,
                         contraseña=contraseña,
-                        rol=getattr(Usuario, 'USUARIO', 'usuario')  
+                        rol=getattr(Usuario, 'USUARIO', 'usuario')
                     )
+                    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                        return JsonResponse({
+                            'success': True,
+                            'message': f'¡{nombre}, tu cuenta ha sido creada exitosamente!'
+                        })
                     messages.success(request, f'¡{nombre}, tu cuenta ha sido creada exitosamente!')
                     return redirect('login')
+                except Exception as e:
+                    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                        return JsonResponse({
+                            'success': False,
+                            'message': 'Error al crear la cuenta. Por favor intenta nuevamente.'
+                        })
+                    messages.error(request, "Error al crear la cuenta. Por favor intenta nuevamente.")
+                    return render(request, 'login.html', {'form': form})
             else:
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    errors = dict(form.errors)
+                    return JsonResponse({
+                        'success': False,
+                        'message': 'Por favor corrige los errores en el formulario.',
+                        'errors': errors
+                    })
                 messages.error(request, "Por favor corrige los errores en el formulario.")
-            return render(request, 'login.html', {'form': form})
+                return render(request, 'login.html', {'form': form})
 
     return render(request, 'login.html', {'form': form})
 
@@ -303,23 +333,30 @@ def editar_perfil_view(request):
 
 # --------- PÁGINAS PÚBLICAS ---------
 from django.shortcuts import render, get_object_or_404
-from .models import Usuario, Blog, Producto
+from .models import Usuario, Blog, Producto,Descuento
 
 def index_view(request):
-    """Página de inicio."""
+
     usuario = get_object_or_404(Usuario, id=request.session['usuario_id']) if 'usuario_id' in request.session else None
     
     blogs = Blog.objects.all().order_by('-id')[:3]
-    
-    # Solo 4 productos (puedes cambiarlos después a más vendidos cuando tengas ventas)
     productos_destacados = Producto.objects.all()[:4]
+
+    descuentos = Descuento.objects.filter(
+        activo=True
+    ).filter(
+        fecha_inicio__lte=timezone.now(),
+        fecha_fin__gte=timezone.now()
+    ).order_by("fecha_fin")
 
     return render(request, 'index.html', {
         'usuario': usuario,
         'sesion_activa': usuario is not None,
         'blogs': blogs,
-        'productos_destacados': productos_destacados
+        'productos_destacados': productos_destacados,
+        'descuentos': descuentos  # <-- AHÍ QUEDA
     })
+    
 
 def SobreNosotros_view(request):
     """Página Sobre Nosotros."""
@@ -642,15 +679,26 @@ def cambiar_estado_pedido_view(request, pedido_id):
 @login_required
 def AgregarProducto_view(request):
     """Agregar o editar productos desde el panel admin."""
-    producto_editar = Producto.objects.get(id=request.POST.get('producto_id')) if request.method == 'POST' and request.POST.get('producto_id') else None
+    producto_editar = None
+    if request.method == 'POST' and request.POST.get('producto_id'):
+        try:
+            producto_editar = Producto.objects.get(id=request.POST.get('producto_id'))
+        except Producto.DoesNotExist:
+            producto_editar = None
+
     if request.method == 'POST':
         form = ProductoForm(request.POST, request.FILES, instance=producto_editar)
         if form.is_valid():
             producto = form.save()
+            # guardar imágenes (si vienen)
             for img in request.FILES.getlist('imagenes'):
                 ImagenProducto.objects.create(producto=producto, imagen=img)
-            messages.success(request, "Producto actualizado exitosamente." if producto_editar else "Producto registrado exitosamente.", extra_tags='dashboard')
-            return redirect('AgregarProducto')
+            messages.success(
+                request,
+                "Producto actualizado exitosamente." if producto_editar else "Producto registrado exitosamente.",
+                extra_tags='dashboard'
+            )
+            return redirect('AgregarProducto')  # ajusta el nombre de la ruta si es distinto
         else:
             # marcar error y enviar los errores del form para mostrar al usuario
             errores = []
@@ -660,8 +708,11 @@ def AgregarProducto_view(request):
             messages.error(request, error_text, extra_tags='dashboard')
     else:
         form = ProductoForm(instance=producto_editar)
+
+    # consulta productos (para listado)
     productos_qs = Producto.objects.all()
-    # construir lista de productos agotados para notificaciones
+
+    # construir lista de productos agotados para notificaciones (fuera del loop)
     out_of_stock_list = []
     for p in productos_qs:
         try:
@@ -669,10 +720,28 @@ def AgregarProducto_view(request):
         except Exception:
             qty = None
         if qty is None or qty <= 0:
-            out_of_stock_list.append({'id': p.id, 'nombre': p.nombre_producto or '', 'codigo': p.codigo_producto or ''})
+            out_of_stock_list.append({
+                'id': p.id,
+                'nombre': getattr(p, 'nombre_producto', '') or '',
+                'codigo': getattr(p, 'codigo_producto', '') or ''
+            })
+
+    # --- obtener descuentos válidos para seleccionar ---
+    descuentos_qs = Descuento.objects.filter(activo=True).filter(
+        (Q(fecha_inicio__isnull=True) | Q(fecha_inicio__lte=timezone.now())) &
+        (Q(fecha_fin__isnull=True) | Q(fecha_fin__gte=timezone.now()))
+    ).order_by('-creado_en')
+
     # serializar a JSON para inyección segura en plantilla
     out_of_stock_json = json.dumps(out_of_stock_list, ensure_ascii=False)
-    return render(request, 'AgregarProducto.html', {'form': form, 'productos': productos_qs, 'producto_editar': producto_editar, 'out_of_stock_json': out_of_stock_json})
+
+    return render(request, 'AgregarProducto.html', {
+        'form': form,
+        'productos': productos_qs,
+        'producto_editar': producto_editar,
+        'out_of_stock_json': out_of_stock_json,
+        'descuentos': descuentos_qs,
+    })
 
 @login_required
 def editar_producto_view(request, producto_id):
@@ -1797,3 +1866,115 @@ def generar_factura_pedido(request, pedido_id):
             content_type='text/plain',
             status=500
         )
+        
+        
+        
+
+
+# ✅ VISTA PRINCIPAL (listar y crear descuentos)
+def dashboard_descuentos(request):
+    """
+    Vista principal del módulo de descuentos:
+    - Muestra el formulario para registrar descuentos.
+    - Lista los descuentos existentes.
+    - Crea nuevos registros (método POST).
+    """
+    if request.method == 'POST':
+        try:
+            nombre = request.POST.get('nombre')
+            codigo = request.POST.get('codigo')
+            tipo = request.POST.get('tipo')
+            valor = request.POST.get('valor')
+            fecha_inicio = request.POST.get('fecha_inicio') or None
+            fecha_fin = request.POST.get('fecha_fin') or None
+            activo = True if request.POST.get('activo') in ['on', '1', True] else False
+
+            # Validaciones simples
+            if not nombre or not valor:
+                messages.error(request, '⚠️ El nombre y el valor son obligatorios.')
+                return redirect('dashboard_descuentos')
+
+            valor = float(valor)
+            if valor <= 0:
+                messages.error(request, '⚠️ El valor del descuento debe ser mayor a 0.')
+                return redirect('dashboard_descuentos')
+
+            # Crear registro
+            Descuento.objects.create(
+                nombre=nombre,
+                codigo=codigo,
+                tipo=tipo,
+                valor=valor,
+                fecha_inicio=fecha_inicio,
+                fecha_fin=fecha_fin,
+                activo=activo,
+                creado_en=timezone.now()
+            )
+
+            messages.success(request, f'✅ Descuento "{nombre}" creado correctamente.')
+            return redirect('dashboard_descuentos')
+
+        except Exception as e:
+            messages.error(request, f'❌ Error al crear el descuento: {e}')
+            return redirect('dashboard_descuentos')
+
+    descuentos = Descuento.objects.all().order_by('-id')
+    return render(request, 'dashboard_descuentos.html', {'descuentos': descuentos})
+
+
+# --- EDITAR (refuerzo: detectar AJAX en GET) ---
+def editar_descuento(request, id):
+    descuento = get_object_or_404(Descuento, id=id)
+
+    if request.method == 'GET':
+        # devolver JSON para el modal (AJAX)
+        data = {
+            'id': descuento.id,
+            'nombre': descuento.nombre,
+            'codigo': descuento.codigo or '',
+            'tipo': descuento.tipo or '',
+            'valor': str(descuento.valor or ''),
+            'fecha_inicio': descuento.fecha_inicio.strftime('%Y-%m-%d') if descuento.fecha_inicio else '',
+            'fecha_fin': descuento.fecha_fin.strftime('%Y-%m-%d') if descuento.fecha_fin else '',
+            'activo': 1 if descuento.activo else 0,
+        }
+        return JsonResponse(data)
+
+    if request.method == 'POST':
+        # guardar cambios enviados por AJAX (POST)
+        try:
+            descuento.nombre = request.POST.get('nombre')
+            descuento.codigo = request.POST.get('codigo')
+            descuento.tipo = request.POST.get('tipo')
+            descuento.valor = float(request.POST.get('valor') or 0)
+            descuento.fecha_inicio = request.POST.get('fecha_inicio') or None
+            descuento.fecha_fin = request.POST.get('fecha_fin') or None
+            descuento.activo = True if request.POST.get('activo') in ['on', '1', True, '1'] else False
+            descuento.save()
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+
+    return HttpResponseBadRequest('Método no permitido')
+
+# --- ELIMINAR (usar POST) ---
+from django.views.decorators.http import require_POST
+@require_POST
+def eliminar_descuento(request, id):
+    try:
+        descuento = get_object_or_404(Descuento, id=id)
+        descuento.delete()
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+# --- TOGGLE (activar/desactivar) aceptar POST y devolver JSON ---
+@require_POST
+def cambiar_estado_descuento(request, id):
+    try:
+        descuento = get_object_or_404(Descuento, id=id)
+        descuento.activo = not descuento.activo
+        descuento.save()
+        return JsonResponse({'success': True, 'activo': descuento.activo})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})

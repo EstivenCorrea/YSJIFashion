@@ -1,4 +1,8 @@
 {% load static %}
+<<<<<<< HEAD
+=======
+{% load socialaccount %}
+>>>>>>> sebas
 <!DOCTYPE html>
 <html lang="es">
   <head>
@@ -10,13 +14,18 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <!-- CSS -->
     <link rel="stylesheet" href="{% static 'css/css.css' %}" />
+<<<<<<< HEAD
     <!-- SweetAlert -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.7.32/sweetalert2.min.css"/>
+=======
+    <link rel="stylesheet" href="{% static 'css/messages.css' %}" />
+>>>>>>> sebas
     <title>Iniciar Sesión</title>
      <link rel="shortcut icon" href="{% static 'images/icon.png' %}">
   </head>
   <body>
 
+<<<<<<< HEAD
     <!-- SweetAlert con Django messages -->
     {% if messages %}
       {% for message in messages %}
@@ -44,6 +53,9 @@
       </script>
       {% endfor %}
     {% endif %}
+=======
+    <!-- Mensajes Django (sin SweetAlert) -->
+>>>>>>> sebas
 
     <div class="container {% if form.errors %}sign-up-mode{% endif %}">
       <div class="forms-container">
@@ -63,12 +75,23 @@
             </div>
             <button type="submit" name="login" class="btn solid">Entrar</button>
             <a href="{% url 'index' %}" class="btn btn-back">Regresar</a>
+<<<<<<< HEAD
             <p class="social-text">O inicia sesión con redes</p>
             <div class="social-media">
               <a href="#" class="social-icon"><i class="bi bi-facebook"></i></a>
               <a href="#" class="social-icon"><i class="bi bi-twitter"></i></a>
               <a href="#" class="social-icon"><i class="bi bi-google"></i></a>
               <a href="#" class="social-icon"><i class="bi bi-linkedin"></i></a>
+=======
+            <p class="social-text">O </p>
+            <div class="social-media" style="justify-content: center;">
+              <a href="{% provider_login_url 'google' %}" class="google-btn" style="text-decoration: none;">
+                <div style="display: flex; align-items: center; background: white; border: 1px solid #ddd; border-radius: 4px; padding: 8px 16px; cursor: pointer;">
+                  <img src="https://www.google.com/favicon.ico" alt="Google" style="width: 18px; height: 18px; margin-right: 8px;">
+                  <span style="color: #757575; font-family: 'Roboto', sans-serif;">Continuar con Google</span>
+                </div>
+              </a>
+>>>>>>> sebas
             </div>
           </form>
 
@@ -104,12 +127,23 @@
             </div>
 
             <button type="submit" name="register" class="btn">Crear Cuenta</button>
+<<<<<<< HEAD
             <p class="social-text">O regístrate con redes</p>
             <div class="social-media">
               <a href="#" class="social-icon"><i class="bi bi-facebook"></i></a>
               <a href="#" class="social-icon"><i class="bi bi-twitter"></i></a>
               <a href="#" class="social-icon"><i class="bi bi-google"></i></a>
               <a href="#" class="social-icon"><i class="bi bi-linkedin"></i></a>
+=======
+            <p class="social-text">O</p>
+            <div class="social-media" style="justify-content: center;">
+              <a href="{% provider_login_url 'google' %}" class="google-btn" style="text-decoration: none;">
+                <div style="display: flex; align-items: center; background: white; border: 1px solid #ddd; border-radius: 4px; padding: 8px 16px; cursor: pointer;">
+                  <img src="https://www.google.com/favicon.ico" alt="Google" style="width: 18px; height: 18px; margin-right: 8px;">
+                  <span style="color: #757575; font-family: 'Roboto', sans-serif;">Continuar con Google</span>
+                </div>
+              </a>
+>>>>>>> sebas
             </div>
           </form>
         </div>
@@ -122,7 +156,10 @@
             <p>Regístrate y accede a todas las funciones de nuestra plataforma.</p>
             <button class="btn transparent" id="sign-up-btn">Regístrate</button>
           </div>
+<<<<<<< HEAD
           <img src="{% static 'images/www.jpg' %}" class="image" alt="" />
+=======
+>>>>>>> sebas
         </div>
         <div class="panel right-panel">
           <div class="content">
@@ -130,12 +167,17 @@
             <p>Inicia sesión y continúa disfrutando de nuestros servicios.</p>
             <button class="btn transparent" id="sign-in-btn">Inicia sesión</button>
           </div>
+<<<<<<< HEAD
           <img src="{% static 'images/pr2.svg' %}" class="image" alt="" />
+=======
+          
+>>>>>>> sebas
         </div>
       </div>
     </div>
 
     <!-- Scripts -->
+<<<<<<< HEAD
     <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.7.32/sweetalert2.min.js"></script>
     <script src="{% static 'js/js.js' %}"></script>
 
@@ -149,5 +191,12 @@
         confirm.type = check.checked ? "text" : "password";
       }
     </script>
+=======
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{% static 'js/js.js' %}"></script>
+
+   
+>>>>>>> sebas
   </body>
 </html>

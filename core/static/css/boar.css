@@ -329,6 +329,8 @@ main.min-main{
     .barra-lateral {
         position: fixed;
         left: -300px;
+        width: 250px;
+        overflow-y: auto;
     }
     .max-barra-lateral{
         left: 0;
@@ -341,8 +343,147 @@ main.min-main{
     }
     main{
         margin-left: 0;
+        padding: 15px;
     }
     main.min-main{
         margin-left: 0;
+    }
+    
+    .barra-lateral .nombre-pagina {
+        margin-bottom: 20px;
+        height: 40px;
+    }
+    
+    .barra-lateral .nombre-pagina span {
+        font-size: 18px;
+    }
+    
+    .barra-lateral .navegacion a {
+        height: 40px;
+        font-size: 14px;
+    }
+    
+    .barra-lateral .modo-oscuro {
+        margin-bottom: 15px;
+    }
+    
+    .box-info {
+        grid-template-columns: 1fr;
+        left: 0;
+        width: 100%;
+    }
+    
+    .box-info li {
+        padding: 16px;
+        grid-gap: 16px;
+    }
+    
+    .box-info li .bx {
+        width: 60px;
+        height: 60px;
+        font-size: 28px;
+    }
+    
+    .box-info li .text h3 {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .barra-lateral {
+        width: 100%;
+        left: -100%;
+        z-index: 1000;
+    }
+    
+    .max-barra-lateral {
+        left: 0;
+    }
+    
+    .menu {
+        width: 45px;
+        height: 45px;
+        font-size: 24px;
+        right: 10px;
+        top: 10px;
+    }
+    
+    main {
+        padding: 10px;
+        margin-left: 0 !important;
+    }
+    
+    .barra-lateral .nombre-pagina {
+        height: 35px;
+        margin-bottom: 15px;
+    }
+    
+    .barra-lateral .nombre-pagina ion-icon {
+        min-width: 40px;
+        font-size: 30px;
+    }
+    
+    .barra-lateral .nombre-pagina span {
+        font-size: 16px;
+        margin-left: 3px;
+    }
+    
+    .barra-lateral span {
+        font-size: 14px;
+        width: 80px;
+    }
+    
+    .barra-lateral .navegacion li {
+        margin-bottom: 3px;
+    }
+    
+    .barra-lateral .navegacion a {
+        height: 40px;
+    }
+    
+    .barra-lateral .navegacion ion-icon {
+        min-width: 40px;
+        font-size: 18px;
+    }
+    
+    .barra-lateral .modo-oscuro {
+        margin-bottom: 10px;
+    }
+    
+    .barra-lateral .modo-oscuro .info {
+        width: 120px;
+        height: 40px;
+        font-size: 14px;
+    }
+    
+    .barra-lateral .modo-oscuro .switch {
+        min-width: 45px;
+        height: 40px;
+    }
+    
+    .barra-lateral .usuario {
+        width: 100%;
+        display: flex;
+    }
+    
+    .barra-lateral .usuario img {
+        width: 40px;
+        min-width: 40px;
+    }
+    
+    .barra-lateral .usuario .nombre {
+        font-size: 12px;
+    }
+    
+    .barra-lateral .usuario .email {
+        font-size: 10px;
+    }
+    
+    .box-info li .text h3 {
+        font-size: 16px;
+    }
+    
+    .box-info li .text p {
+        font-size: 12px;
     }
 }

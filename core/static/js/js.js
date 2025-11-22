@@ -1,205 +1,168 @@
-// static/js/js.js
 document.addEventListener("DOMContentLoaded", () => {
-  // ---------- Helpers: selectores tolerantes con "ñ" ----------
   const q = (sel) => document.querySelector(sel);
-  const qAll = (sel) => document.querySelectorAll(sel);
 
-  // ---------- Toggle entre formularios - CORREGIDO ----------
   const sign_in_btn = q("#sign-in-btn");
   const sign_up_btn = q("#sign-up-btn");
   const container = q(".container");
 
-  // Debug para verificar elementos
-  console.log("Sign up button:", sign_up_btn);
-  console.log("Sign in button:", sign_in_btn);
-  console.log("Container:", container);
-
-  if (sign_up_btn && container) {
+  if (sign_up_btn) {
     sign_up_btn.addEventListener("click", (e) => {
       e.preventDefault();
-      console.log("Click en sign-up-btn");
       container.classList.add("sign-up-mode");
     });
   }
 
-  if (sign_in_btn && container) {
+  if (sign_in_btn) {
     sign_in_btn.addEventListener("click", (e) => {
       e.preventDefault();
-      console.log("Click en sign-in-btn");
       container.classList.remove("sign-up-mode");
     });
   }
 
-  // ---------- Función global para mostrar contraseñas ----------
-  window.mostrarContraseñas = function() {
+  // Toggle password
+  window.mostrarContraseñas = function () {
     const pass = q("#contraseña");
     const confirm = q("#confirmar_contraseña");
     const check = q("#mostrarContraseña");
-    
-    if (pass && confirm && check) {
-      pass.type = check.checked ? "text" : "password";
-      confirm.type = check.checked ? "text" : "password";
+
+    if (check.checked) {
+      pass.type = "text";
+      confirm.type = "text";
+    } else {
+      pass.type = "password";
+      confirm.type = "password";
     }
   };
 
-  // ---------- Validación registro ----------
-  function validarRegistro() {
-    const nombreInput = q('#registerForm input[name="nombre"]');
-    const correoInput = q('#registerForm input[name="correo"]');
-    const passInput = q('#contraseña');
-    const confirmInput = q('#confirmar_contraseña');
+  // -------- VALIDACIÓN SOLO PARA SWEETALERT --------
+  function validarRegistroCampos() {
+    const nombre = q("#nombre")?.value.trim();
+    const correo = q("#correo")?.value.trim();
+    const pass = q("#contraseña")?.value;
+    const confirm = q("#confirmar_contraseña")?.value;
 
-    const nombre = nombreInput?.value.trim() ?? "";
-    const correo = correoInput?.value.trim() ?? "";
-    const contraseña = passInput?.value ?? "";
-    const confirmarContraseña = confirmInput?.value ?? "";
+    let errores = [];
 
-    let esValido = true;
-    const errores = [];
+    if (!nombre) errores.push("El nombre es obligatorio");
+    if (!correo) errores.push("El correo es obligatorio");
 
-    if (!nombre) {
-      errores.push("El nombre es obligatorio");
-      esValido = false;
-    } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(nombre)) {
-      errores.push("El nombre solo debe contener letras");
-      esValido = false;
-    } else if (nombre.length < 2) {
-      errores.push("El nombre debe tener al menos 2 caracteres");
-      esValido = false;
-    }
-
-    if (!correo) {
-      errores.push("El correo electrónico es obligatorio");
-      esValido = false;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
-      errores.push("El formato del correo electrónico es inválido");
-      esValido = false;
-    }
-
-    if (!contraseña) {
+    if (!pass) {
       errores.push("La contraseña es obligatoria");
-      esValido = false;
     } else {
-      if (contraseña.length < 8) {
-        errores.push("La contraseña debe tener mínimo 8 caracteres");
-        esValido = false;
-      }
-      if (!/[a-z]/.test(contraseña)) {
+      if (!/[a-z]/.test(pass))
         errores.push("La contraseña debe tener al menos una letra minúscula");
-        esValido = false;
-      }
-      if (!/[A-Z]/.test(contraseña)) {
+      if (!/[A-Z]/.test(pass))
         errores.push("La contraseña debe tener al menos una letra mayúscula");
-        esValido = false;
-      }
-      if (!/[0-9]/.test(contraseña)) {
-        errores.push("La contraseña debe tener al menos un número");
-        esValido = false;
-      }
-      if (!/[^a-zA-Z0-9]/.test(contraseña)) {
+      if (/^[A-Za-z0-9]*$/.test(pass))
         errores.push("La contraseña debe tener al menos un carácter especial");
-        esValido = false;
-      }
     }
 
-    if (!confirmarContraseña) {
+    if (!confirm) {
       errores.push("Debe confirmar la contraseña");
-      esValido = false;
-    } else if (contraseña !== confirmarContraseña) {
+    } else if (pass !== confirm) {
       errores.push("Las contraseñas no coinciden");
-      esValido = false;
     }
 
-    if (!esValido) {
-      Swal.fire({
-        icon: "error",
-        title: "¡Campos incompletos o incorrectos!",
-        html:
-          '<div style="text-align: left; padding: 10px;">' +
-          errores.map((error) => `• ${error}`).join("<br>") +
-          "</div>",
-        confirmButtonText: "Entendido",
-      });
-    }
-
-    return esValido;
+    return errores;
   }
 
-  // ---------- Login con AJAX ----------
+  // ------------------- LOGIN -------------------
   const loginForm = q("#loginForm");
+
   if (loginForm) {
-    loginForm.addEventListener("submit", function (e) {
+    loginForm.addEventListener("submit", (e) => {
       e.preventDefault();
 
-      const correo = loginForm.querySelector('input[name="correo"]')?.value.trim() ?? "";
-      const contraseña = loginForm.querySelector('input[name="contraseña"]')?.value ?? "";
-
-      if (!correo || !contraseña) {
-        Swal.fire({
-          icon: "warning",
-          title: "¡Campos requeridos!",
-          text: "Debes completar el correo y la contraseña",
-          confirmButtonText: "Entendido",
-        });
-        return;
-      }
-
       const formData = new FormData(loginForm);
-      formData.append("login", "1");
+      formData.append("login", "true");
 
       Swal.fire({
         title: "Iniciando sesión...",
         didOpen: () => Swal.showLoading(),
         allowOutsideClick: false,
-        allowEscapeKey: false,
         showConfirmButton: false,
       });
 
-      fetch(window.location.href, {
+      fetch("", {
         method: "POST",
-        headers: {
-          "X-Requested-With": "XMLHttpRequest",
-          "X-CSRFToken": formData.get("csrfmiddlewaretoken"),
-        },
         body: formData,
+        headers: { "X-Requested-With": "XMLHttpRequest" },
       })
-        .then((res) => res.json())
+        .then((r) => r.json())
         .then((data) => {
           Swal.close();
           Swal.fire({
             icon: data.success ? "success" : "error",
-            title: data.success ? "¡Bienvenido!" : "Error",
+            title: data.success ? "Bienvenido" : "Error",
             text: data.message,
-            confirmButtonText: "Aceptar",
           }).then(() => {
-            if (data.success && data.redirect_url) {
-              window.location.href = data.redirect_url;
-            } else {
-              loginForm.reset();
-            }
+            if (data.success) window.location.href = data.redirect_url;
           });
         })
-        .catch((err) => {
+        .catch(() => {
           Swal.close();
-          console.error("Error en login AJAX:", err);
-          Swal.fire("¡Error!", "No se pudo conectar al servidor.", "error");
+          Swal.fire("Error", "No se pudo conectar al servidor", "error");
         });
     });
   }
 
-  // ---------- Submit registro ----------
+  // ------------------- REGISTRO -------------------
   const registerForm = q("#registerForm");
+
   if (registerForm) {
-    registerForm.addEventListener("submit", function (e) {
-      if (!validarRegistro()) {
-        e.preventDefault();
-      } else {
+    registerForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const errores = validarRegistroCampos();
+
+      if (errores.length > 0) {
         Swal.fire({
-          title: "Creando cuenta...",
-          didOpen: () => Swal.showLoading(),
-          allowOutsideClick: false,
+          icon: "error",
+          title: "¡Campos incompletos o incorrectos!",
+          html: `
+              <ul style="text-align: left; font-size: 15px; margin-top: 10px;">
+                ${errores.map((e) => `<li>${e}</li>`).join("")}
+              </ul>
+          `,
         });
+        return;
       }
+
+      const formData = new FormData(registerForm);
+      formData.append("register", "true");
+
+      Swal.fire({
+        title: "Creando cuenta...",
+        didOpen: () => Swal.showLoading(),
+        allowOutsideClick: false,
+        showConfirmButton: false,
+      });
+
+      fetch("", {
+        method: "POST",
+        body: formData,
+        headers: { "X-Requested-With": "XMLHttpRequest" },
+      })
+        .then((r) => r.json())
+        .then((data) => {
+          Swal.close();
+
+          if (data.success) {
+            Swal.fire({
+              icon: "success",
+              title: "Registro exitoso",
+              text: data.message,
+              timer: 2000,
+              showConfirmButton: false,
+            }).then(() => (window.location.href = "/login/"));
+          } else {
+            Swal.fire("Error", data.message, "error");
+          }
+        })
+        .catch(() => {
+          Swal.close();
+          Swal.fire("Error", "No se pudo conectar al servidor", "error");
+        });
     });
   }
 });

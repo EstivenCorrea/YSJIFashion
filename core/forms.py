@@ -20,13 +20,39 @@ class RegistroForm(forms.Form):
         return cleaned_data
 
 
+
+
+# core/forms.py
+from django import forms
+from .models import Descuento, Producto
+
+class DescuentoForm(forms.ModelForm):
+    class Meta:
+        model = Descuento
+        fields = [
+            'codigo', 'nombre', 'descripcion', 'tipo', 'valor',
+            'max_uso', 'aplicable_a', 'fecha_inicio', 'fecha_fin',
+            'activo', 'observaciones'
+        ]
+        widgets = {
+            'fecha_inicio': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'}),
+            'fecha_fin': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'}),
+            'descripcion': forms.Textarea(attrs={'rows': 2, 'class': 'form-control'}),
+            'observaciones': forms.Textarea(attrs={'rows': 2, 'class': 'form-control'}),
+        }
+
+
+
+
+
+
 from django import forms
 from .models import Producto, Categoria, Proveedor, Marca, Stock
 
 class ProductoForm(forms.ModelForm):
-    # Campo extra para manejar el stock (tabla separada)
     stock_cantidad = forms.IntegerField(required=False, min_value=0, initial=0, label='Stock',
-                                       widget=forms.NumberInput(attrs={'placeholder': 'Stock', 'min': '0'}))
+                                       widget=forms.NumberInput(attrs={'placeholder': 'Stock', 'min': '0', 'class':'form-control'}))
+
     class Meta:
         model = Producto
         fields = [
@@ -35,60 +61,84 @@ class ProductoForm(forms.ModelForm):
             'descripcion_producto',
             'valor_producto',
             'categoria',
-            'marca',            # Nuevo campo
-            'proveedor',        # Nuevo campo
+            'marca',
+            'proveedor',
             'imagen_producto',
-            'tallas_disponibles', 
-            'colores_disponibles', 
+            'tallas_disponibles',
+            'colores_disponibles',
+            'descuento',    # <- agregado
         ]
+        widgets = {
+            'codigo_producto': forms.TextInput(attrs={'class':'form-control','placeholder':'Código del Producto'}),
+            'nombre_producto': forms.TextInput(attrs={'class':'form-control','placeholder':'Nombre del Producto'}),
+            'descripcion_producto': forms.Textarea(attrs={'class':'form-control','rows':3,'placeholder':'Descripción'}),
+            'valor_producto': forms.NumberInput(attrs={'class':'form-control','step':'0.01'}),
+            'categoria': forms.Select(attrs={'class':'form-select'}),
+            'marca': forms.Select(attrs={'class':'form-select'}),
+            'proveedor': forms.Select(attrs={'class':'form-select'}),
+            'imagen_producto': forms.ClearableFileInput(attrs={'class':'form-control'}),
+            'tallas_disponibles': forms.TextInput(attrs={'class':'form-control'}),
+            'colores_disponibles': forms.TextInput(attrs={'class':'form-control'}),
+            'descuento': forms.Select(attrs={'class':'form-select'}),  # widget para descuento
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['codigo_producto'].widget.attrs.update({'placeholder': 'Código del Producto'})
-        self.fields['nombre_producto'].widget.attrs.update({'placeholder': 'Nombre del Producto'})
-        self.fields['descripcion_producto'].widget.attrs.update({'placeholder': 'Descripción'})
-        self.fields['valor_producto'].widget.attrs.update({'placeholder': 'Valor', 'min': '1'})
-        self.fields['tallas_disponibles'].widget.attrs.update({
-            'placeholder': 'Ej: S, M, L, XL',
-            'class': 'form-control',
-        })
-        self.fields['colores_disponibles'].widget.attrs.update({
-            'placeholder': 'Ej: Rojo, Azul, Verde',
-            'class': 'form-control',
-        })
-        self.fields['marca'].queryset = Marca.objects.all()
-        self.fields['proveedor'].queryset = Proveedor.objects.all()
-        # asegurar que el campo categoria exista y tenga queryset si es FK
+
+        # placeholders y clases
+        if 'codigo_producto' in self.fields:
+            self.fields['codigo_producto'].widget.attrs.update({'placeholder': 'Código del Producto'})
+        if 'nombre_producto' in self.fields:
+            self.fields['nombre_producto'].widget.attrs.update({'placeholder': 'Nombre del Producto'})
+        if 'descripcion_producto' in self.fields:
+            self.fields['descripcion_producto'].widget.attrs.update({'placeholder': 'Descripción'})
+
+        # Querysets para selects
+        if 'marca' in self.fields:
+            self.fields['marca'].queryset = Marca.objects.all()
+            self.fields['marca'].empty_label = 'Seleccionar marca'
+        if 'proveedor' in self.fields:
+            self.fields['proveedor'].queryset = Proveedor.objects.all()
+            self.fields['proveedor'].empty_label = 'Seleccionar proveedor'
         if 'categoria' in self.fields:
             self.fields['categoria'].queryset = Categoria.objects.all()
-        # inicializar stock desde la relación OneToOne Stock si existe el instance
+            self.fields['categoria'].empty_label = 'Seleccionar categoría'
+
+        # Descuentos: mostrar solo activos y/o vigentes (ajusta filtro si quieres otra lógica)
+        if 'descuento' in self.fields:
+            # puedes filtrar por activo y vigencia si tu modelo Descuento tiene esos campos
+            try:
+                self.fields['descuento'].queryset = Descuento.objects.filter(activo=True)
+            except Exception:
+                # fallback si aún no existe la tabla/descuento
+                self.fields['descuento'].queryset = Descuento.objects.all()
+            self.fields['descuento'].required = False
+            self.fields['descuento'].empty_label = 'Sin descuento'
+
+        # inicializar stock si la instancia tiene stock
         if 'stock_cantidad' in self.fields:
             try:
                 if getattr(self, 'instance', None) and hasattr(self.instance, 'stock') and self.instance.stock is not None:
                     self.fields['stock_cantidad'].initial = self.instance.stock.cantidad
             except Exception:
-                # no bloquear si hay problemas al leer stock
                 pass
 
     def save(self, commit=True):
-        product = super().save(commit=commit)
-        # actualizar/crear registro stock si se guardó el producto
+        producto = super().save(commit=commit)
+        # sincronizar tabla Stock si la usas
         try:
             stock_val = self.cleaned_data.get('stock_cantidad')
         except Exception:
             stock_val = None
         if commit and stock_val is not None:
             try:
-                Stock.objects.update_or_create(producto=product, defaults={'cantidad': int(stock_val) if stock_val is not None else 0})
+                Stock.objects.update_or_create(producto=producto, defaults={'cantidad': int(stock_val)})
             except Exception:
-                # no detener el guardado del producto por errores de stock
                 pass
         else:
-            # si commit=False, dejar el valor pendiente en la instancia
             if stock_val is not None:
-                setattr(product, '_pending_stock', stock_val)
-        return product
-
+                setattr(producto, '_pending_stock', stock_val)
+        return producto
 from .models import Categoria
 
 class CategoriaForm(forms.ModelForm):
@@ -153,4 +203,7 @@ class MensajeForm(forms.ModelForm):
             'telefono': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese su número'}),
             'mensaje': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Ingrese su mensaje', 'rows': 4}),
         }
+
+
+
 

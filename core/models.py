@@ -47,6 +47,35 @@ class Pedido(models.Model):
             return total
 
 
+
+class Descuento(models.Model):
+    id = models.AutoField(primary_key=True)
+    codigo = models.CharField(max_length=50, null=True)
+    nombre = models.CharField(max_length=120)
+    descripcion = models.TextField(null=True)
+    tipo = models.CharField(max_length=20, default='porcentaje')
+    valor = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    max_uso = models.IntegerField(null=True)
+    usos_realizados = models.IntegerField(default=0)
+    aplicable_a = models.CharField(max_length=30, default='todos')
+    fecha_inicio = models.DateTimeField(null=True)
+    fecha_fin = models.DateTimeField(null=True)
+    activo = models.BooleanField(default=True)
+    observaciones = models.TextField(null=True)
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        managed = False  # 👉 Importante: Django no creará la tabla
+        db_table = 'descuentos'  # nombre real de tu tabla MySQL
+        ordering = ['-creado_en']
+
+    def __str__(self):
+        return f"{self.nombre} ({self.valor}{'%' if self.tipo == 'porcentaje' else '$'})"
+
+
+
+from django.utils import timezone
+from decimal import Decimal
 class Producto(models.Model):
 
     codigo_producto   = models.CharField(max_length=100, unique=True)
@@ -60,12 +89,95 @@ class Producto(models.Model):
     colores_disponibles = models.CharField(max_length=100, null=True)
     marca = models.ForeignKey('Marca', on_delete=models.SET_NULL, null=True, blank=True)
     proveedor = models.ForeignKey('Proveedor', on_delete=models.SET_NULL, null=True, blank=True)
+
+    descuento = models.ForeignKey(
+    'Descuento',
+    on_delete=models.SET_NULL,
+    null=True,
+    blank=True,
+    db_column='descuento_id',
+    related_name='productos'
+)
+    # --- MÉTODOS PARA MANEJO DE DESCUENTO ---
+    @property
+    def tiene_descuento(self):
+        """Valida si el producto tiene un descuento válido y vigente."""
+        if not self.descuento:
+            return False
+        if not self.descuento.activo:
+            return False
+        if self.descuento.fecha_inicio and self.descuento.fecha_inicio > timezone.now():
+            return False
+        if self.descuento.fecha_fin and self.descuento.fecha_fin < timezone.now():
+            return False
+        return True
+
+    @property
+    def valor_descuento(self):
+        """Retorna el valor del descuento según el tipo."""
+        if not self.tiene_descuento:
+            return Decimal('0.00')
+
+        if self.descuento.tipo == "porcentaje":
+            try:
+                vp = Decimal(str(self.valor_producto))
+                dv = Decimal(str(self.descuento.valor))
+                return (vp * dv) / Decimal('100')
+            except Exception:
+                return Decimal('0.00')
+
+        # Descuento por valor fijo
+        try:
+            return Decimal(str(self.descuento.valor))
+        except Exception:
+            return Decimal('0.00')
+
+    @property
+    def precio_final(self):
+        """Calcula el precio final ya con descuento aplicado."""
+        if not self.tiene_descuento:
+            try:
+                return Decimal(str(self.valor_producto))
+            except Exception:
+                return Decimal('0.00')
+
+        try:
+            vp = Decimal(str(self.valor_producto))
+            precio = vp - Decimal(self.valor_descuento)
+            if precio < Decimal('0.00'):
+                return Decimal('0.00')
+            return precio
+        except Exception:
+            return Decimal('0.00')
+
+    @property
+    def texto_ribbon(self):
+        """Retorna el texto del listón para la UI."""
+        if not self.tiene_descuento:
+            return ""
+
+        if self.descuento.tipo == "porcentaje":
+            return f"-{int(self.descuento.valor)}% OFF"
+        
+        # Descuento por monto: formatea con separador de miles
+        monto = self.descuento.valor
+        try:
+            monto_formateado = f"{monto:,.0f}".replace(",", ".")
+        except:
+            monto_formateado = str(monto)
+        return f"-${monto_formateado}"
+    
+
+
     class Meta:
         db_table = 'productos'
         managed  = True   
 
     def __str__(self):
         return self.nombre_producto
+    
+
+
     
 class ImagenProducto(models.Model):
     producto = models.ForeignKey(Producto, related_name='imagenes', on_delete=models.CASCADE)

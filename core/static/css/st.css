@@ -4,13 +4,13 @@ body {
   background-color: #f4f4f4;
 }
 
-    .container {
-      max-width: 1500px;
-      background: #fff;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    }
+.container {
+  max-width: 1500px;
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
 
     h2 {
       margin-bottom: 20px;
@@ -218,4 +218,187 @@ button:disabled {
   background-color: #ccc;
   color: #666;
   cursor: not-allowed;
+}
+
+/* ===== MEJORAS RESPONSIVE ===== */
+/* Pantallas pequeñas: teléfonos */
+@media (max-width: 480px) {
+  .container {
+    padding: 15px;
+    max-width: 100%;
+    margin: 0 5px;
+  }
+
+  h2 {
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
+
+  .btn-add,
+  button {
+    padding: 8px 12px;
+    font-size: 13px;
+    width: 100%;
+  }
+
+  .form-group {
+    flex: 1 1 100% !important;
+    margin-bottom: 10px;
+  }
+
+  .form-group label {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    font-size: 12px;
+    padding: 8px;
+    margin-bottom: 8px;
+  }
+
+  .split {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .button-group button {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  /* Tabla responsive */
+  table {
+    font-size: 12px !important;
+  }
+
+  table td, table th {
+    padding: 8px 4px !important;
+  }
+
+  .d-flex {
+    flex-wrap: wrap;
+  }
+}
+
+/* Pantallas medianas: tablets */
+@media (max-width: 768px) {
+  .container {
+    padding: 20px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  .form-group {
+    flex: 1 1 100% !important;
+  }
+
+  .split {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  button {
+    padding: 10px 15px;
+    font-size: 14px;
+  }
+
+  /* Asegurar que el perfil de admin se vea bien */
+  .admin-profile-sidebar {
+    padding: 8px !important;
+  }
+
+  .perfil-admin-flex {
+    flex-wrap: wrap;
+    padding: 0 4px !important;
+  }
+
+  .perfil-admin-flex img {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  .perfil-admin-flex .ms-2 {
+    margin-left: 8px !important;
+    font-size: 12px;
+  }
+
+  .perfil-admin-flex .fw-bold {
+    font-size: 0.95em !important;
+  }
+
+  .perfil-admin-flex .text-muted {
+    font-size: 0.85em !important;
+  }
+
+  .menu-tres-puntos .puntos {
+    font-size: 1.5em;
+  }
+}
+
+/* Pantallas muy pequeñas: dispositivos muy reducidos */
+@media (max-width: 360px) {
+  .container {
+    padding: 10px;
+  }
+
+  h2 {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .form-group label {
+    font-size: 11px;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    font-size: 11px;
+    padding: 6px;
+  }
+
+  button {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .admin-profile-sidebar {
+    padding: 6px !important;
+    margin-top: 10px !important;
+  }
+
+  .perfil-admin-flex img {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  .perfil-admin-flex .ms-2 {
+    margin-left: 6px !important;
+    font-size: 10px;
+  }
+
+  .menu-tres-puntos .puntos {
+    font-size: 1.2em;
+  }
+
+  .menu-tres-puntos .menu-opciones {
+    min-width: 100px;
+    font-size: 12px;
+  }
+
+  .menu-tres-puntos .menu-opciones a {
+    padding: 8px 10px;
+    font-size: 0.85em;
+  }
 }

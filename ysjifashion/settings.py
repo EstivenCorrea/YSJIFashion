@@ -29,7 +29,7 @@ DEBUG = True
 # settings.py
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'juvenilely-uncandid-loura.ngrok-free.dev',]
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -40,10 +40,15 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
+    'django.contrib.staticfiles', 
     'core',
     'django.contrib.humanize',
-
+    # Apps necesarias para autenticación social (django-allauth)
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
 
 MIDDLEWARE = [
@@ -56,6 +61,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     
 ]
 
@@ -84,8 +90,6 @@ WSGI_APPLICATION = 'ysjifashion.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-import os
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -99,7 +103,6 @@ DATABASES = {
         }
     }
 }
-
 
 
 # Password validation
@@ -147,6 +150,53 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# django-allauth / autenticación social
+SITE_ID = 1
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+LOGIN_REDIRECT_URL = '/cuenta/'  # redirigir a la vista de cuenta después del login
+
+# Opciones de cuenta (allauth)
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = 'optional'  # 'mandatory' si quieres verificar siempre
+ACCOUNT_USERNAME_REQUIRED = False
+SOCIALACCOUNT_AUTO_SIGNUP = False
+SOCIALACCOUNT_LOGIN_ON_GET = True
+
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        },
+        'APP': {
+            'client_id':  os.getenv('GOOGLE_CLIENT_ID'),
+            'secret':  os.getenv('GOOGLE_CLIENT_SECRET'),
+            'key': ''
+        }
+    }
+}
+
+
+
+
+
+
+
 
 # PayPal Sandbox
 PAYPAL_CLIENT_ID = "AfFmoNGhHVg4hXOHy6wtl10KQZNu9qmKPy5oNMw3EFtvJfQtvb_JdyZyv2W2fB30HMqDv1qym_FBIZ6v"

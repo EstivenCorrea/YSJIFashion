@@ -1,4 +1,6 @@
-{% extends 'dashboard_base.html' %} {% load static %} {% block content %}
+{% extends 'dashboard_base.html' %}
+{% load static %}
+{% block content %}
 <link href="{% static 'css/AgregarProducto.css' %}" rel="stylesheet" />
 <style>
   .error-message {
@@ -31,19 +33,40 @@
   }
 </style>
 
+<!-- SweetAlert2: incluye solo una vez en toda la app. Si ya lo incluyes en dashboard_base.html, coméntalo aquí. -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
 {% if messages %}
   {% for message in messages %}
     {% if 'dashboard' in message.tags %}
       <script>
         document.addEventListener('DOMContentLoaded', function(){
-          Swal.fire({
-            icon: "{% if message.level >= 40 %}error{% elif message.level >= 30 %}warning{% elif message.level >= 25 %}success{% else %}info{% endif %}",
-            title: "{{ message|escapejs }}",
-            showConfirmButton: false,
-            timer: 1800
-          });
+          try {
+            const msgText = "{{ message|escapejs }}";
+            const msgLevel = "{{ message.level }}";
+            // clave reducida, para evitar keys excesivas (base64 corta)
+            const key = 'swal_msg_' + btoa(String(msgLevel) + '||' + msgText).slice(0, 40);
+            try {
+              const meta = JSON.parse(localStorage.getItem(key) || 'null');
+              if (meta && (Date.now() - meta.ts) < 5000) {
+                return; // ya mostrado recientemente
+              }
+            } catch(e){ /* ignore */ }
+
+            Swal.fire({
+              icon: "{% if message.level >= 40 %}error{% elif message.level >= 30 %}warning{% elif message.level >= 25 %}success{% else %}info{% endif %}",
+              title: msgText,
+              showConfirmButton: false,
+              timer: 1800
+            });
+
+            try {
+              localStorage.setItem(key, JSON.stringify({ ts: Date.now() }));
+            } catch(e){ /* ignore */ }
+          } catch(e) {
+            console.warn('swal message show error', e);
+          }
         });
       </script>
     {% endif %}
@@ -126,6 +149,12 @@
           {{ form.proveedor }}
           <small class="error-message">{% if form.proveedor.errors %}{{ form.proveedor.errors|striptags }}{% endif %}</small>
         </div>
+        <div class="form-group">
+          <label for="{{ form.descuento.id_for_label }}">Descuento</label>
+          {{ form.descuento }}
+          <small class="error-message">{% if form.descuento.errors %}{{ form.descuento.errors|striptags }}{% endif %}</small>
+        </div>
+
         <div class="form-group">
           <label for="id_stock_cantidad">Stock</label>
           <input type="number" name="stock_cantidad" id="id_stock_cantidad" min="0" value="{% if form.stock_cantidad.value %}{{ form.stock_cantidad.value }}{% elif producto_editar and producto_editar.stock %}{{ producto_editar.stock.cantidad }}{% else %}0{% endif %}" class="form-control" />
@@ -294,7 +323,7 @@
   <input type="hidden" id="_pe_colores" value="{{ producto_editar.colores_disponibles|default_if_none:''|escapejs }}" />
   <input type="hidden" id="_pe_stock" value="{% if producto_editar.stock %}{{ producto_editar.stock.cantidad }}{% else %}{% endif %}" />
   <script>
-    // Abrir modal cuando la vista devolvió un producto para editar.
+    // Abrir menu cuando la vista devolvió un producto para editar.
     document.addEventListener('DOMContentLoaded', function(){
       try { toggleMenu(true); } catch(e) { /* noop */ }
     });
@@ -307,8 +336,7 @@
 
     if (!form) return; // seguridad, por si no existe el form en la vista
 
-    // Si el servidor indicó producto_editar y por alguna razón el ModelForm no rellenó
-    // los valores (inputs vacíos), tomar de los inputs ocultos y poblarlos.
+    // Prefill logic (si model form no logró poblar)
     try {
       const hid = (id) => document.getElementById(id);
       const prefills = [
@@ -347,11 +375,10 @@
       const stockEl = form.querySelector('[name="stock_cantidad"]') || document.getElementById('id_stock_cantidad');
       if (stockEl && hstock && (!stockEl.value || stockEl.value === '')) stockEl.value = hstock.value || 0;
     } catch (e) {
-      // no bloquear si algo falla
       console.warn('Error al prefijar campos desde inputs ocultos', e);
     }
 
-    // Campos con sus mensajes de error
+    // Campos con sus mensajes de error (igual que antes)
     const campos = {
       codigo: {
         input: form.querySelector('[name="codigo_producto"]'),
@@ -426,6 +453,17 @@
           return "";
         },
       },
+      descuento: {
+        input: form.querySelector('[name="descuento"]'),
+        errorElem: null,
+        validar() {
+          if (!this.input) return "";
+          // Algunos widgets pueden tener value '' o 'default' para opción por defecto
+          if (!this.input.value || this.input.value === "default")
+            return "Debes seleccionar un descuento.";
+          return "";
+        },
+      },
       proveedor: {
         input: form.querySelector('[name="proveedor"]'),
         errorElem: null,
@@ -453,7 +491,6 @@
       if (!val.trim()) return "Las tallas no pueden estar vacías.";
       if (/^\s|\s$/.test(val))
         return "Las tallas no pueden tener espacios al inicio o final.";
-      // Permite letras, números, espacios y comas, pero no al inicio o final
       if (!/^([a-zA-Z0-9]+(\s*,\s*[a-zA-Z0-9]+)*)$/.test(val))
         return "Las tallas solo pueden contener letras, números, comas y espacios intermedios.";
       return "";
@@ -468,7 +505,6 @@ colores: {
     if (!val.trim()) return "Los colores no pueden estar vacíos.";
     if (/^\s|\s$/.test(val))
       return "Los colores no pueden tener espacios al inicio o final.";
-    // ✅ Permite letras (con acentos o ñ), espacios dentro del color y comas separadoras
     if (!/^([a-zA-ZáéíóúÁÉÍÓÚñÑ]+(\s[a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*(\s*,\s*[a-zA-ZáéíóúÁÉÍÓÚñÑ]+(\s[a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*)*)$/.test(val))
       return "Los colores solo pueden contener letras, espacios dentro del nombre y comas intermedias.";
     return "";
@@ -510,7 +546,6 @@ colores: {
           return true;
         }
       } catch (e) {
-        // Si cualquier validación lanza, no bloquear el submit; marcar como inválido por precaución
         console.warn('validarCampo error', e);
         return false;
       }
@@ -588,53 +623,61 @@ colores: {
       });
     }
 
-    // Submit del formulario
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
+    // ----------------------------
+    // Submit del formulario (nuevo comportamiento)
+    // ----------------------------
+    if (!window.__agregarProductoInit) {
+      window.__agregarProductoInit = true;
 
-      let todoValido = true;
-      for (const key in campos) {
-        const campo = campos[key];
-        const valido = validarCampo(campo);
-        if (!valido) todoValido = false;
-      }
-      if (campos.codigo.errorElem && campos.codigo.errorElem.style.display === "block") {
-        todoValido = false;
-      }
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
 
-      if (!todoValido) {
-        Swal.fire({
-          icon: "error",
-          title: "Formulario inválido",
-          text: "Por favor corrige los campos resaltados en rojo.",
-        });
-        return;
-      }
+        // Validaciones
+        let todoValido = true;
+        for (const key in campos) {
+          const campo = campos[key];
+          const valido = validarCampo(campo);
+          if (!valido) todoValido = false;
+        }
+        if (campos.codigo.errorElem && campos.codigo.errorElem.style.display === "block") {
+          todoValido = false;
+        }
 
-      // Detectar si es edición o agregado
-      const esEdicion = !!form.querySelector('[name="producto_id"]');
+        if (!todoValido) {
+          Swal.fire({
+            icon: "error",
+            title: "Formulario inválido",
+            text: "Por favor corrige los campos resaltados en rojo.",
+          });
+          return;
+        }
 
-      // Cambiar el mensaje según el caso; al cerrar la alerta (confirm o timer) se envía el form.
-      // Si por alguna razón SweetAlert falla, hacemos submit directo para no bloquear la acción.
-      try {
-        Swal.fire({
-          icon: "success",
-          title: esEdicion
-            ? "Producto actualizado exitosamente"
-            : "Producto agregado exitosamente",
-          showConfirmButton: true,
-          confirmButtonText: "Aceptar",
-          timer: 1500,
-          timerProgressBar: true
-        }).then(() => {
-          console.log('SweetAlert confirmado, enviando form...');
-          form.submit();
-        });
-      } catch (e) {
-        console.warn('SweetAlert fallo, enviando formulario directamente', e);
+        // Evita doble envío
+        if (form.dataset.submitted === '1') {
+          return;
+        }
+        form.dataset.submitted = '1';
+
+        // Mostrar loader (no "éxito" cliente).
+        try {
+          Swal.fire({
+            title: 'Enviando...',
+            html: 'Por favor espera mientras guardamos el producto.',
+            allowOutsideClick: false,
+            didOpen: () => {
+              Swal.showLoading();
+            },
+            showConfirmButton: false,
+            allowEscapeKey: false
+          });
+        } catch (e) {
+          console.warn('Swal loader fallo', e);
+        }
+
+        // Envío normal (POST -> servidor hará redirect y mostrará su propio message)
         form.submit();
-      }
-    });
+      });
+    }
 
     // Mostrar el menú si se está editando
     if (document.getElementById("mostrarMenu").value === "true") {
@@ -656,10 +699,9 @@ colores: {
   }
 
   // ==========================
-  // Eliminar producto
+  // Eliminar producto (usa SweetAlert confirm)
   // ==========================
   const botonesEliminar = document.querySelectorAll(".btn-eliminar");
-
   botonesEliminar.forEach((btn) => {
     btn.addEventListener("click", function (e) {
       e.preventDefault();
@@ -677,15 +719,26 @@ colores: {
         cancelButtonText: "Cancelar",
       }).then((result) => {
         if (result.isConfirmed) {
-          Swal.fire({
-            icon: "success",
-            title: "Producto eliminado",
-            showConfirmButton: false,
-            timer: 1200,
-          }).then(() => {
-            // Redirige a la URL de eliminación
-            window.location.href = url;
-          });
+          // Mostrar un loader breve y redirigir al endpoint de eliminación.
+          // Evitamos mostrar un mensaje de 'éxito' aquí para no duplicarlo
+          // con el mensaje que el servidor añade tras el redirect.
+          try {
+            Swal.fire({
+              title: 'Eliminando...',
+              allowOutsideClick: false,
+              didOpen: () => {
+                Swal.showLoading();
+              },
+              showConfirmButton: false,
+            });
+          } catch (e) {
+            console.warn('Swal loader fallo', e);
+          }
+
+          // Redirige a la URL de eliminación (el servidor suele añadir un message y
+          // la página resultante mostrará la confirmación). No esperar al timer
+          // del Swal para evitar duplicidad.
+          window.location.href = url;
         }
       });
     });
@@ -694,10 +747,13 @@ colores: {
   // Carrusel
   function moveSlide(productId, direction) {
     const carousel = document.querySelector(`#carousel${productId}`);
+    if (!carousel) return;
     const items = carousel.querySelectorAll(".carousel-item");
+    if (!items || items.length === 0) return;
     let activeIndex = Array.from(items).findIndex((item) =>
       item.classList.contains("active")
     );
+    if (activeIndex === -1) activeIndex = 0;
 
     items[activeIndex].classList.remove("active");
 

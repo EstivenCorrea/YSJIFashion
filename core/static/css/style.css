@@ -2413,3 +2413,44 @@ text-align: justify;
     transform: translateX(-50%);
     border-radius: 2px;
   }
+
+
+
+
+
+/* === Carrusel de descuentos === */
+#discount-carousel {
+    background: linear-gradient(90deg, #000000, #000000);
+    padding: 12px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    display: none;  /* se muestra con scroll */
+    position: sticky;
+    top: 90px; /* debajo del nav */
+    z-index: 999;
+}
+
+.discount-track {
+    display: inline-block;
+    animation: scroll 18s linear infinite;
+}
+
+.discount-item {
+    display: inline-block;
+    margin: 0 40px;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.discount-tag {
+    background: #ffffff44;
+    padding: 3px 8px;
+    border-radius: 10px;
+    margin-right: 6px;
+}
+
+@keyframes scroll {
+    from { transform: translateX(100%); }
+    to { transform: translateX(-100%); }
+}

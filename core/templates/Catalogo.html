@@ -86,6 +86,28 @@
     box-shadow: 0 4px 18px rgba(99,102,241,0.12);
     border-color: #6366f1;
   }
+  /* Contenedor de la imagen debe permitir overlay (ribbon) */
+  .img-container { position: relative; overflow: hidden; }
+
+  /* Ribbon diagonal para descuentos */
+  .ribbon-discount {
+    position: absolute;
+    top: 12px;
+    right: -32px;
+    transform: rotate(45deg);
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+    color: white;
+    padding: 6px 44px;
+    font-weight: 800;
+    font-size: 12px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.18);
+    z-index: 10;
+    text-align: center;
+  }
+
+  .price-original { text-decoration: line-through; color: #999; font-size: 0.95rem; margin-right: 8px; }
+  .price-discounted { color: #ff3b3b; font-weight: 700; font-size: 1.05rem; }
+  .discount-badge { background: #ff3b3b; color: white; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; margin-left: 8px; }
   /* Estética del pequeño chip que muestra la selección */
   .variant-chip {
     display: inline-block;
@@ -320,8 +342,9 @@
             <div role="tabpanel" class="tab-pane fade show active" id="grid-view">
               <div class="row" id="products-row">
                 {% for producto in productos %}
-                <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-12 product-col mb-4"
-                     data-price="{{ producto.valor_producto }}"
+                 <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-12 product-col mb-4"
+                   data-price="{{ producto.valor_producto }}"
+                   data-price-final="{% if producto.tiene_descuento %}{{ producto.precio_final }}{% else %}{{ producto.valor_producto }}{% endif %}"
                      data-brand="{{ producto.marca_producto|default:'' }}"
                     data-category="{% if producto.categoria %}{{ producto.categoria.nombre }}{% else %}{{ producto.categoria_producto }}{% endif %}">
                   <div class="product-card d-flex flex-column h-100 p-2 rounded shadow-sm bg-white">
@@ -342,8 +365,8 @@
                             {% endif %}
                           </div>
                           {% endfor %}
-                        </div>
-                        {% if producto.imagenes.count > 1 %}
+                          </div>
+                          {% if producto.imagenes.count > 1 %}
                         <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ producto.id }}" data-bs-slide="prev">
                           <span class="carousel-control-prev-icon"></span>
                         </button>
@@ -351,11 +374,22 @@
                           <span class="carousel-control-next-icon"></span>
                         </button>
                         {% endif %} 
+                        </div>
+                        {% if producto.tiene_descuento %}
+                          <div class="ribbon-discount">{{ producto.texto_ribbon }}</div>
+                        {% endif %}
                       </div>
-                    </div>
                     <div class="product-info text-center">
                       <h1>{{ producto.nombre_producto }}</h1>
-                      <span class="price">${{ producto.valor_producto|intcomma }} COP</span>
+                      {% if producto.tiene_descuento %}
+                        <div class="d-flex justify-content-center align-items-center gap-2" style="flex-wrap:wrap;">
+                          <span class="price-original">${{ producto.valor_producto|intcomma }} COP</span>
+                          <span class="price-discounted">${{ producto.precio_final|intcomma }} COP</span>
+                          <span class="discount-badge">{{ producto.texto_ribbon }}</span>
+                        </div>
+                      {% else %}
+                        <span class="price">${{ producto.valor_producto|intcomma }} COP</span>
+                      {% endif %}
                       {% if producto.stock %}
                         {% if producto.stock.cantidad > 0 %}
                           <div class="stock-info">
@@ -405,6 +439,7 @@
                           data-product-id="{{ producto.id }}"
                           data-nombre="{{ producto.nombre_producto|escape }}"
                           data-precio="{{ producto.valor_producto }}"
+                          data-precio-final="{% if producto.tiene_descuento %}{{ producto.precio_final }}{% else %}{{ producto.valor_producto }}{% endif %}"
                           data-imagen="{% if producto.imagenes.first %}{{ producto.imagenes.first.imagen.url }}{% elif producto.imagen_producto %}{{ producto.imagen_producto.url }}{% else %}{% endif %}"
                           data-stock="{{ producto.stock.cantidad }}">
                           Añadir
@@ -413,6 +448,7 @@
                           data-product-id="{{ producto.id }}"
                           data-nombre="{{ producto.nombre_producto|escape }}"
                           data-precio="{{ producto.valor_producto }}"
+                          data-precio-final="{% if producto.tiene_descuento %}{{ producto.precio_final }}{% else %}{{ producto.valor_producto }}{% endif %}"
                           data-imagen="{% if producto.imagenes.first %}{{ producto.imagenes.first.imagen.url }}{% elif producto.imagen_producto %}{{ producto.imagen_producto.url }}{% else %}{% endif %}"
                           data-stock="{{ producto.stock.cantidad }}">
                           Comprar
@@ -625,7 +661,7 @@
       btn.addEventListener('click', function(e){
         const id = parseInt(this.dataset.productId);
         const nombre = this.dataset.nombre || '';
-        const precio = this.dataset.precio || '0';
+        const precio = this.dataset.precioFinal || this.dataset.precio || '0';
         const imagen = this.dataset.imagen || '';
         const stock = parseInt(this.dataset.stock || '0');
         // leer selects de talla/color si existen
@@ -650,7 +686,7 @@
       btn.addEventListener('click', function(e){
         const id = parseInt(this.dataset.productId);
         const nombre = this.dataset.nombre || '';
-        const precio = this.dataset.precio || '0';
+        const precio = this.dataset.precioFinal || this.dataset.precio || '0';
         const imagen = this.dataset.imagen || '';
         const stock = parseInt(this.dataset.stock || '0');
         // leer selects de talla/color si existen

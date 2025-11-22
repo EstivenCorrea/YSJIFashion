@@ -4,7 +4,7 @@
     /* Estilos para la página de detalle de producto */
     
 .producto-detalle {
-  max-width: 900px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 2rem;
   font-family: Arial, sans-serif;
@@ -56,19 +56,28 @@
   background-color: #2980b9;
 }
 
-@media (max-width: 768px) {
-  .producto-detalle {
-    padding: 1rem;
-  }
-
-  .producto-info h2 {
-    font-size: 1.5rem;
-  }
-
-  .producto-info p {
-    font-size: 0.9rem;
-  }
+/* Ribbon styles */
+.product-image-container { position: relative; overflow: hidden; max-width: 100%; }
+.product-image-container img { width: 100%; height: auto; display: block; max-height: 450px; object-fit: cover; }
+.ribbon-discount {
+  position: absolute;
+  top: 20px;
+  right: -35px;
+  transform: rotate(45deg);
+  background: #ff0000;
+  color: white;
+  padding: 8px 50px;
+  font-weight: bold;
+  font-size: 13px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+  z-index: 10;
+  text-align: center;
 }
+.price-original { text-decoration: line-through; color: #999; font-size: 14px; margin-right: 8px; }
+.price-discounted { color: #ff0000; font-weight: bold; font-size: 18px; }
+.discount-badge { background: #ff0000; color: white; padding: 2px 8px; border-radius: 3px; font-size: 12px; font-weight: bold; margin-left: 8px; }
+
+.product-details { grid-column: 1; }
 
 </style>
 <div class="producto-detalle">
@@ -76,14 +85,23 @@
     <h2>{{ producto.nombre_producto }}</h2>
     <p><strong>Codigo:</strong> {{ producto.codigo_producto }}</p>
     <p style="white-space: pre-wrap;"><strong>Descripción:</strong> {{ producto.descripcion_producto }}</p>
-    <p><strong>Valor:</strong> ${{ producto.valor_producto|intcomma }} Cop</p>
-  <p><strong>Cantidad:</strong> {% if producto.stock %}{{ producto.stock.cantidad }}{% else %}{{ producto.cantidad_producto|default:'-' }}{% endif %}</p>
-  <p><strong>Categoría:</strong> {% if producto.categoria %}{{ producto.categoria.nombre }}{% else %}{{ producto.categoria_producto }}{% endif %}</p>
+
+    <!-- Precios -->
+    <div class="mb-2">
+      {% if producto.tiene_descuento %}
+        <span class="price-original">${{ producto.valor_producto|intcomma }} COP</span>
+        <span class="price-discounted">${{ producto.precio_final|intcomma }} COP</span>
+        <span class="discount-badge">{{ producto.texto_ribbon }}</span>
+      {% else %}
+        <span class="price-discounted" style="color:#333;">${{ producto.valor_producto|intcomma }} COP</span>
+      {% endif %}
+    </div>
+
+    <p><strong>Cantidad:</strong> {% if producto.stock %}{{ producto.stock.cantidad }}{% else %}{{ producto.cantidad_producto|default:'-' }}{% endif %}</p>
+    <p><strong>Categoría:</strong> {% if producto.categoria %}{{ producto.categoria.nombre }}{% else %}{{ producto.categoria_producto }}{% endif %}</p>
     <p><strong>Tallas disponibles:</strong> {{ producto.tallas_disponibles }}</p>
     <p><strong>Colores disponibles:</strong> {{ producto.colores_disponibles }}</p>
-    <p><strong>Marca:</strong> {{ producto.marca.nombre }}</p>    
-    
-
+    <p><strong>Marca:</strong> {{ producto.marca.nombre }}</p>
 
     <div class="button-group">
      <a href="javascript:history.back()" class="btn-volver">Volver</a>

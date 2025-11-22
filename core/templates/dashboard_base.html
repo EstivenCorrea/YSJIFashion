@@ -173,6 +173,12 @@
               <span>Mensajes</span>
             </a>
           </li>
+          <li class="{% if request.path == '/descuentos/' %}active{% endif %}">
+            <a href="{% url 'dashboard_descuentos' %}">
+              <ion-icon name="newspaper-outline"></ion-icon>
+              <span>Descuentos</span>
+            </a>
+          </li>
           <li class="{% if request.path == '/login/' %}active{% endif %}">
             <a href="{% url 'logout'%}">
               <ion-icon name="log-out-outline"></ion-icon>
