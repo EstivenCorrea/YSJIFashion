@@ -29,7 +29,13 @@ DEBUG = True
 # settings.py
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
-ALLOWED_HOSTS = []
+
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    ".onrender.com",
+    "ysji-fashion.onrender.com"
+]
 
 
 # Application definition
