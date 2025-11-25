@@ -1,8 +1,5 @@
 {% load static %}
-<<<<<<< HEAD
-=======
 {% load socialaccount %}
->>>>>>> sebas
 <!DOCTYPE html>
 <html lang="es">
   <head>
@@ -14,48 +11,13 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <!-- CSS -->
     <link rel="stylesheet" href="{% static 'css/css.css' %}" />
-<<<<<<< HEAD
-    <!-- SweetAlert -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.7.32/sweetalert2.min.css"/>
-=======
     <link rel="stylesheet" href="{% static 'css/messages.css' %}" />
->>>>>>> sebas
     <title>Iniciar Sesión</title>
      <link rel="shortcut icon" href="{% static 'images/icon.png' %}">
   </head>
   <body>
 
-<<<<<<< HEAD
-    <!-- SweetAlert con Django messages -->
-    {% if messages %}
-      {% for message in messages %}
-      <script>
-        document.addEventListener("DOMContentLoaded", function () {
-          let icon =
-            "{{ message.tags }}" === "success" ? "success" :
-            "{{ message.tags }}" === "error"   ? "error"   :
-            "{{ message.tags }}" === "warning" ? "warning" : "info";
-
-          Swal.fire({
-            icon: icon,
-            title:
-              icon === "success" ? "¡Éxito!" :
-              icon === "error"   ? "¡Error!" :
-              icon === "warning" ? "¡Advertencia!" : "Información",
-            text: "{{ message|escapejs }}",
-            confirmButtonText: "Aceptar",
-          }).then(() => {
-            if (icon === "success" && "{{ message|escapejs }}".includes("cuenta ha sido creada")) {
-              document.querySelector(".container").classList.remove("sign-up-mode");
-            }
-          });
-        });
-      </script>
-      {% endfor %}
-    {% endif %}
-=======
     <!-- Mensajes Django (sin SweetAlert) -->
->>>>>>> sebas
 
     <div class="container {% if form.errors %}sign-up-mode{% endif %}">
       <div class="forms-container">
@@ -75,14 +37,10 @@
             </div>
             <button type="submit" name="login" class="btn solid">Entrar</button>
             <a href="{% url 'index' %}" class="btn btn-back">Regresar</a>
-<<<<<<< HEAD
-            <p class="social-text">O inicia sesión con redes</p>
-            <div class="social-media">
-              <a href="#" class="social-icon"><i class="bi bi-facebook"></i></a>
-              <a href="#" class="social-icon"><i class="bi bi-twitter"></i></a>
-              <a href="#" class="social-icon"><i class="bi bi-google"></i></a>
-              <a href="#" class="social-icon"><i class="bi bi-linkedin"></i></a>
-=======
+            <a href="{% url 'password_reset' %}" style="display: block; text-align: center; margin-top: 10px; color: #3498db; text-decoration: none; font-size: 14px;">
+              ¿Olvidaste tu contraseña?
+            </a>
+
             <p class="social-text">O </p>
             <div class="social-media" style="justify-content: center;">
               <a href="{% provider_login_url 'google' %}" class="google-btn" style="text-decoration: none;">
@@ -91,7 +49,6 @@
                   <span style="color: #757575; font-family: 'Roboto', sans-serif;">Continuar con Google</span>
                 </div>
               </a>
->>>>>>> sebas
             </div>
           </form>
 
@@ -127,14 +84,6 @@
             </div>
 
             <button type="submit" name="register" class="btn">Crear Cuenta</button>
-<<<<<<< HEAD
-            <p class="social-text">O regístrate con redes</p>
-            <div class="social-media">
-              <a href="#" class="social-icon"><i class="bi bi-facebook"></i></a>
-              <a href="#" class="social-icon"><i class="bi bi-twitter"></i></a>
-              <a href="#" class="social-icon"><i class="bi bi-google"></i></a>
-              <a href="#" class="social-icon"><i class="bi bi-linkedin"></i></a>
-=======
             <p class="social-text">O</p>
             <div class="social-media" style="justify-content: center;">
               <a href="{% provider_login_url 'google' %}" class="google-btn" style="text-decoration: none;">
@@ -143,7 +92,6 @@
                   <span style="color: #757575; font-family: 'Roboto', sans-serif;">Continuar con Google</span>
                 </div>
               </a>
->>>>>>> sebas
             </div>
           </form>
         </div>
@@ -156,10 +104,6 @@
             <p>Regístrate y accede a todas las funciones de nuestra plataforma.</p>
             <button class="btn transparent" id="sign-up-btn">Regístrate</button>
           </div>
-<<<<<<< HEAD
-          <img src="{% static 'images/www.jpg' %}" class="image" alt="" />
-=======
->>>>>>> sebas
         </div>
         <div class="panel right-panel">
           <div class="content">
@@ -167,36 +111,16 @@
             <p>Inicia sesión y continúa disfrutando de nuestros servicios.</p>
             <button class="btn transparent" id="sign-in-btn">Inicia sesión</button>
           </div>
-<<<<<<< HEAD
-          <img src="{% static 'images/pr2.svg' %}" class="image" alt="" />
-=======
           
->>>>>>> sebas
         </div>
       </div>
     </div>
 
     <!-- Scripts -->
-<<<<<<< HEAD
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.7.32/sweetalert2.min.js"></script>
-    <script src="{% static 'js/js.js' %}"></script>
-
-    <script>
-      // Mostrar/ocultar contraseñas
-      function mostrarContraseñas() {
-        const pass = document.getElementById("contraseña");
-        const confirm = document.getElementById("confirmar_contraseña");
-        const check = document.getElementById("mostrarContraseña");
-        pass.type = check.checked ? "text" : "password";
-        confirm.type = check.checked ? "text" : "password";
-      }
-    </script>
-=======
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{% static 'js/js.js' %}"></script>
 
    
->>>>>>> sebas
   </body>
 </html>

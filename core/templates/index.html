@@ -1,13 +1,8 @@
 {% load static %}
-<<<<<<< HEAD
-<!DOCTYPE html>
-<html lang="en">
-=======
 {% load humanize %}
 <!DOCTYPE html>
 <html lang="en">
 
->>>>>>> sebas
 <head>
     <!-- Metadatos básicos -->
     <meta charset="utf-8">
@@ -42,64 +37,13 @@
                 z-index: 10;
                 text-align: center;
             }
-                        .price-original { text-decoration: line-through; color: #999; font-size: 0.95rem; margin-right: 8px; }
-                        .price-discounted { color: #ff3b3b; font-weight: 700; font-size: 1.05rem; }
-                        .discount-badge { background: #ff3b3b; color: white; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; margin-left: 8px; }
-
-                        /* Ensure price elements align and wrap nicely */
-                        .why-text h5 { display: inline-flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
-                        .discount-badge { display:inline-block; white-space:nowrap; }
-                        .why-text h5 > * { min-width: 0; }
-
-                        @media (max-width: 768px) {
-                            .why-text h5 { font-size: 1.1rem; gap: 6px; }
-                            .price-original { font-size: 0.95rem; }
-                            .price-discounted { font-size: 1rem; }
-                            .discount-badge { font-size: 0.75rem; padding: 3px 6px; }
-                            .box-img-hover { height: 220px; }
-                        }
-
-                        @media (max-width: 420px) {
-                            .why-text h5 { font-size: 1rem; gap: 6px; }
-                            .price-original { font-size: 0.9rem; }
-                            .price-discounted { font-size: 0.95rem; }
-                            .discount-badge { font-size: 0.72rem; padding: 2px 6px; }
-                            .ribbon-discount { transform: rotate(45deg); right: -18px; padding: 4px 28px; font-size: 10px; }
-                            .box-img-hover { height: 200px; }
-                        }
+            .price-original { text-decoration: line-through; color: #999; font-size: 0.95rem; margin-right: 8px; }
+            .price-discounted { color: #ff3b3b; font-weight: 700; font-size: 1.05rem; }
+            .discount-badge { background: #ff3b3b; color: white; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; margin-left: 8px; }
         </style>
 </head>
 
 <body>
-<<<<<<< HEAD
- <div class="main-top" style="background:#000;">
-    <div class="container-fluid px-0">
-        <div class="row">
-            <div class="col-12 px-0">
-                <div class="d-flex align-items-center" style="height:38px; justify-content: flex-start; padding-left: 2vw;">
-                    {% if sesion_activa %}
-                        <a href="{% if usuario.rol == 'admin' %}{% url 'dashboard' %}{% else %}{% url 'cuenta' %}{% endif %}"
-                            class="d-flex align-items-center text-white text-decoration-none" style="font-weight:600; margin-right:24px;">
-                            {% if usuario.imagen_perfil %}
-                                <img src="{{ usuario.imagen_perfil.url }}" alt="Perfil" style="width:28px;height:28px;object-fit:cover;border-radius:50%;border:1.5px solid #fff;margin-right:8px;">
-                            {% else %}
-                                <img src="{% static 'images/user-default.png' %}" alt="Perfil" style="width:28px;height:28px;object-fit:cover;border-radius:50%;border:1.5px solid #fff;margin-right:8px;">
-                            {% endif %}
-                            MI CUENTA
-                        </a>
-                    {% else %}
-                        <a href="{% url 'login' %}" class="d-flex align-items-center text-white text-decoration-none" style="font-weight:600; margin-right:24px;">
-                            MI CUENTA
-                        </a>
-                    {% endif %}
-                    <span style="color:#fff;opacity:.55;font-size:1.3em;margin-right:24px;">|</span>
-                    <a href="https://www.google.com/maps/place/SENA+-+Centro+de+Tecnolog%C3%ADa+de+la+Manufactura+Avanzada/@6.302048,-75.5734267,17z/data=!4m6!3m5!1s0x8e442f25d6670d4d:0x8043999e5e767b96!8m2!3d6.302048!4d-75.5685611!16s%2Fg%2F1trqj853?entry=ttu&g_ep=EgoyMDI1MDYyMy4yIKXMDSoASAFQAw%3D%3D" class="text-white text-decoration-none" style="font-weight:500;margin-right:24px;">NUESTRA UBICACIÓN</a>
-                    <span style="color:#fff;opacity:.55;font-size:1.3em;margin-right:24px;">|</span>
-                    <span class="text-white" style="font-weight:500;margin-right:24px;">LLÁMANOS: +57 3312281046</span>
-                    <span style="color:#fff;opacity:.55;font-size:1.3em;margin-right:24px;">|</span>
-                    <span class="text-white" style="font-weight:500;margin-right:24px;">COP</span>
-                    <span style="color:#fff;opacity:.55;font-size:1.3em;margin-right:24px;">|</span>
-=======
     <div class="main-top" style="background:#000;">
         <div class="container-fluid px-0">
             <div class="row">
@@ -136,15 +80,10 @@
                         <span class="text-white" style="font-weight:500;margin-right:24px;">COP</span>
                         <span style="color:#fff;opacity:.55;font-size:1.3em;margin-right:24px;">|</span>
                     </div>
->>>>>>> sebas
                 </div>
             </div>
         </div>
     </div>
-<<<<<<< HEAD
-</div>
-=======
->>>>>>> sebas
     <header class="main-header">
         <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-default bootsnav">
             <div class="container">
@@ -164,11 +103,7 @@
                         <li class="nav-item"><a class="nav-link" href="{% url 'SobreNosotros' %}">Sobre nosotros</a>
                         </li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'Catalogo' %}">Catálogo</a></li>
-<<<<<<< HEAD
-                       
-=======
 
->>>>>>> sebas
                         <li class="nav-item"><a class="nav-link" href="{% url 'Contactenos' %}">Contáctanos</a></li>
                     </ul>
                 </div>
@@ -182,8 +117,6 @@
             </div>
         </nav>
     </header>
-<<<<<<< HEAD
-=======
     <!-- Carrusel de Descuentos -->
     <div id="discount-carousel">
         <div class="discount-track">
@@ -214,7 +147,6 @@
     </div>
 
 
->>>>>>> sebas
     <div class="top-search">
         <div class="container">
             <div class="input-group">
@@ -281,11 +213,7 @@
                         <img class="img-fluid" src="{% static 'images/7a.jpg' %}"
                             alt="Camisetas - Ropa cómoda y moderna" />
                         <div class="overlay">
-<<<<<<< HEAD
-                        <a class="btn hvr-hover" href="{% url 'Catalogo' %}?categoria=Camisetas">Camisetas</a>
-=======
                             <a class="btn hvr-hover" href="{% url 'Catalogo' %}?categoria=Camisetas">Camisetas</a>
->>>>>>> sebas
                             <p class="category-description">Encuentra camisetas con los diseños más trendy y cómodos.
                             </p>
                         </div>
@@ -318,12 +246,8 @@
                 <!-- Tercera columna de categorías -->
                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                     <div class="shop-cat-box">
-<<<<<<< HEAD
-                        <img class="img-fluid" src="{% static 'images/9b.jpg' %}" alt="Faldas - Diversidad de estilos" />
-=======
                         <img class="img-fluid" src="{% static 'images/9b.jpg' %}"
                             alt="Faldas - Diversidad de estilos" />
->>>>>>> sebas
                         <div class="overlay">
                             <a class="btn hvr-hover" href="{% url 'Catalogo' %}?categoria=faldas">Faldas</a>
                             <p class="category-description">Faldas con estilos variados para cada gusto.</p>
@@ -345,98 +269,6 @@
 
     <!-- Productos -->
     <div class="products-box">
-<<<<<<< HEAD
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="title-all text-center">
-                    <h1>Productos Destacados</h1>
-                    <p>Conoce los productos más vendidos este 2025</p>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="special-menu text-center">
-                    
-                </div>
-            </div>
-        </div>
-
-        <div class="row special-list">
-            {% for producto in productos_destacados %}
-            {% with cat=producto.categoria %}
-            <div class="col-lg-3 col-md-6 special-grid 
-                {% if cat and cat.nombre|lower == 'accesorios' %}top-featured
-                {% elif cat and cat.nombre|lower == 'bolsos' %}best-seller
-                {% else %}otros{% endif %}">
-                
-                <div class="products-single fix">
-                    <div class="box-img-hover">
-                        <div class="type-lb">
-                            <p class="{% if forloop.counter|divisibleby:2 %}new{% else %}sale{% endif %}">
-                                {% if forloop.counter|divisibleby:2 %}Nuevo{% else %}Venta{% endif %}
-                            </p>
-                        </div>
-                        
-                    {% if producto.imagenes.first %}
-                        <img src="{{ producto.imagenes.first.imagen.url }}" alt="{{ producto.nombre_producto }}" class="img-fluid">
-                    {% elif producto.imagen_producto %}
-                        <img src="{{ producto.imagen_producto.url }}" alt="{{ producto.nombre_producto }}" class="img-fluid">
-                    {% else %}
-                        <img src="{% static 'images/no-image.png' %}" alt="Sin imagen" class="img-fluid">
-                    {% endif %}
-
-
-
-                        
-                        <div class="mask-icon" id="producto-{{ producto.id }}">
-                            <ul>
-                                <button class="like-button" onclick="toggleLike('producto-{{ producto.id }}')">
-                                    <i class="far fa-heart"></i>
-                                </button>
-                                <span class="like-count">0</span> like
-                            </ul>
-                            <a class="cart" href="{% url 'Catalogo' %}{% if cat %}?categoria={{ cat.id }}{% else %}?categoria={{ producto.categoria_producto }}{% endif %}">
-                                Ver
-                            </a>
-                        </div>
-                    </div>
-                    <div class="why-text">
-                        <h4>{{ producto.nombre_producto }}</h4>
-                        <h5>${{ producto.valor_producto|floatformat:0 }}</h5>
-                    </div>
-                </div>
-            </div>
-            {% endwith %}
-            {% endfor %}
-        </div>
-    </div>
-</div>
-
-    <!-- Fin Productos -->
-
-<div class="container my-5">
-  <div class="blog-row">
-    <div class="section-title-block">
-      <h1>Blog</h1>
-    </div>
-
-    {% for blog in blogs %}
-    <div class="blog-card-horizontal">
-      <img src="{{ blog.foto.url }}" class="blog-card-img" alt="{{ blog.titulo }}">
-      <div class="blog-card-content">
-        <h3>{{ blog.titulo }}</h3>
-        <p>{{ blog.cuerpo|linebreaks }}</p>
-      </div>
-    </div>
-    {% empty %}
-    <p class="text-muted">No hay blogs disponibles.</p>
-    {% endfor %}
-
-  </div>
-</div>
-=======
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
@@ -465,9 +297,9 @@
                     <div class="products-single fix">
                         <div class="box-img-hover">
                             <div class="type-lb">
-                                <!--<p class="{% if forloop.counter|divisibleby:2 %}new{% else %}sale{% endif %}">
-                                    {% if forloop.counter|divisibleby:2 %}Nuevo{% else %}Venta{% endif %} 
-                                </p> -->
+                                <p class="{% if forloop.counter|divisibleby:2 %}new{% else %}sale{% endif %}">
+                                    {% if forloop.counter|divisibleby:2 %}Nuevo{% else %}Venta{% endif %}
+                                </p>
                             </div>
 
                             {% if producto.imagenes.first %}
@@ -505,12 +337,12 @@
                             <h4>{{ producto.nombre_producto }}</h4>
                             {% if producto.tiene_descuento %}
                                 <h5>
-                                    <span class="price-original">${{ producto.valor_producto|intcomma }} COP</span>
-                                    <span class="price-discounted">${{ producto.precio_final|intcomma }} COP</span>
+                                    <span class="price-original">${{ producto.valor_producto|floatformat:0 }}</span>
+                                    <span class="price-discounted">${{ producto.precio_final|floatformat:0 }}</span>
                                     <span class="discount-badge">{{ producto.texto_ribbon }}</span>
                                 </h5>
                             {% else %}
-                                <h5>${{ producto.valor_producto|intcomma }} COP</h5>
+                                <h5>${{ producto.valor_producto|floatformat:0 }}</h5>
                             {% endif %}
                         </div>
                     </div>
@@ -543,18 +375,13 @@
 
         </div>
     </div>
->>>>>>> sebas
     <!-- Carrusel Footer -->
     <div class="instagram-box">
         <div class="main-instagram owl-carousel owl-theme">
             <div class="item">
                 <div class="ins-inner-box">
                     <img src="{% static 'images/o.jpg' %}" class="slide" alt="" />
-<<<<<<< HEAD
-                  
-=======
 
->>>>>>> sebas
                 </div>
             </div>
             <div class="item">
@@ -565,31 +392,19 @@
             <div class="item">
                 <div class="ins-inner-box">
                     <img src="{% static 'images/q.jpg' %}" class="slide" alt="" />
-<<<<<<< HEAD
-                  
-=======
 
->>>>>>> sebas
                 </div>
             </div>
             <div class="item">
                 <div class="ins-inner-box">
                     <img src="{% static 'images/cc.jpg' %}" class="slide" alt="" />
-<<<<<<< HEAD
-                  
-=======
 
->>>>>>> sebas
                 </div>
             </div>
             <div class="item">
                 <div class="ins-inner-box">
                     <img src="{% static 'images/bb.jpg' %}" class="slide" alt="" />
-<<<<<<< HEAD
-                  
-=======
 
->>>>>>> sebas
                 </div>
             </div>
             <div class="item">
@@ -600,31 +415,19 @@
             <div class="item">
                 <div class="ins-inner-box">
                     <img src="{% static 'images/zz.jpg' %}" class="slide" alt="" />
-<<<<<<< HEAD
-                   
-=======
 
->>>>>>> sebas
                 </div>
             </div>
             <div class="item">
                 <div class="ins-inner-box">
                     <img src="{% static 'images/t.jpg' %}" class="slide" alt="" />
-<<<<<<< HEAD
-                 
-=======
 
->>>>>>> sebas
                 </div>
             </div>
             <div class="item">
                 <div class="ins-inner-box">
                     <img src="{% static 'images/s.jpg' %}" class="slide" alt="" />
-<<<<<<< HEAD
-                  
-=======
 
->>>>>>> sebas
                 </div>
             </div>
             <div class="item">
@@ -636,41 +439,6 @@
         </div>
     </div>
     <!-- Fin Carrusel -->
-<<<<<<< HEAD
-<footer class="footer">
-    <div class="container">
-        <!-- Logo -->
-        <div class="footer-logo">
-            <h2>YSJI FASHION</h2>
-        </div>
-
-        <!-- Links -->
-        <div class="footer-menu">
-            <a href="{% url 'index' %}">Inicio</a>
-            <a href="{% url 'Catalogo' %}">Catálogo</a>
-            <a href="{% url 'SobreNosotros' %}">Sobre Nosotros</a>
-            <a href="{% url 'Contactenos' %}">Contactanos</a>
-            <a href="#">Políticas</a>
-        </div>
-
-        <!-- Redes Sociales -->
-        <div class="footer-social">
-            <a href="https://www.facebook.com/" target="_blank"><i class="fab fa-facebook-f"></i></a>
-            <a href="https://www.instagram.com/" target="_blank"><i class="fab fa-instagram"></i></a>
-            <a href="https://www.pinterest.com/" target="_blank"><i class="fab fa-pinterest-p"></i></a>
-            <a href="https://wa.me/573001112233" target="_blank"><i class="fab fa-whatsapp"></i></a>
-        </div>
-
-        <!-- Derechos -->
-        <div class="footer-bottom">
-            <p>© 2024 YSJI FASHION · Todos los derechos reservados</p>
-        </div>
-    </div>
-</footer>
-
-   <a href="#" id="back-to-top" title="Subir" style="display: none"
-      >&uarr;</a>
-=======
     <footer class="footer">
         <div class="container">
             <!-- Logo -->
@@ -703,7 +471,6 @@
     </footer>
 
     <a href="#" id="back-to-top" title="Subir" style="display: none">&uarr;</a>
->>>>>>> sebas
 
     <!-- Scripts -->
     <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
@@ -721,21 +488,6 @@
     <script src="{% static 'js/form-validator.min.js' %}"></script>
     <script src="{% static 'js/contact-form-script.js' %}"></script>
     <script src="{% static 'js/custom.js' %}"></script>
-<<<<<<< HEAD
-{% if messages %}
-    <div id="public-messages" style="position: fixed; top: 16px; right: 16px; z-index:9999;">
-        {% for message in messages %}
-            {% if not message.tags or 'dashboard' not in message.tags %}
-                <div class="alert-message" style="background:#222;color:#fff;padding:10px 14px;border-radius:6px;margin-bottom:8px;box-shadow:0 4px 10px rgba(0,0,0,.12);">
-                    {{ message }}
-                </div>
-            {% endif %}
-        {% endfor %}
-    </div>
-{% endif %}
-
-</body>
-=======
     {% if messages %}
     <div id="public-messages" style="position: fixed; top: 16px; right: 16px; z-index:9999;">
         {% for message in messages %}
@@ -765,5 +517,4 @@
 
 </body>
 
->>>>>>> sebas
 </html>

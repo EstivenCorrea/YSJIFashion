@@ -93,17 +93,16 @@ WSGI_APPLICATION = 'ysjifashion.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'ysji_crud',          # nombre de tu BD en phpMyAdmin
-        'USER': 'root',                # tu usuario de MySQL
-        'PASSWORD': '',                # tu contraseña
-        'HOST': 'host.docker.internal', # conecta al MySQL de tu máquina desde Docker
+        'NAME': 'ysji_crud',           # el nombre de tu base de datos
+        'USER': 'root',           # tu usuario de MySQL
+        'PASSWORD': '',           # tu contraseña (vacía si no tienes)
+        'HOST': 'localhost',
         'PORT': '3306',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
         }
     }
 }
-
 
 
 # Password validation

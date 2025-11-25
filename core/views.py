@@ -25,7 +25,7 @@ from django.utils import timezone
 
 # Modelos
 from .models import (
-    Usuario, Producto, Categoria, Pedido, ImagenProducto, Marca, Proveedor, Mensaje, Descuento
+    Usuario, Producto, Stock, Categoria, Pedido, ImagenProducto, Marca, Proveedor, Mensaje, Descuento, TokenRecuperacion
 )
 # Formularios
 from .forms import (RegistroForm, ProductoForm, CategoriaForm, UsuarioForm, MarcaForm, ProveedorForm, MensajeForm, DescuentoForm
@@ -298,6 +298,169 @@ def logout_view(request):
     """Cerrar sesión del usuario."""
     request.session.flush()
     return redirect('index')
+
+# --------- RECUPERACIÓN DE CONTRASEÑA ---------
+from django.core.mail import send_mail
+from django.conf import settings
+
+def password_reset(request):
+    """
+    Paso 1: Usuario solicita recuperar contraseña.
+    Si es AJAX (POST), envía correo con enlace de recuperación.
+    Si es GET, muestra formulario.
+    """
+    if request.method == 'GET':
+        return render(request, 'password_reset.html', {'modo': 'solicitar'})
+    
+    if request.method == 'POST':
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            try:
+                data = json.loads(request.body)
+                correo = data.get('correo', '').strip().lower()
+            except Exception:
+                return JsonResponse({'success': False, 'message': 'Datos inválidos'})
+        else:
+            correo = request.POST.get('correo', '').strip().lower()
+        
+        if not correo:
+            return JsonResponse({'success': False, 'message': 'Por favor ingresa tu correo'})
+        
+        try:
+            usuario = Usuario.objects.get(correo__iexact=correo)
+            
+            # Crear token de recuperación
+            token_obj = TokenRecuperacion.crear_token(usuario)
+            
+            # Construir enlace de recuperación
+            reset_url = request.build_absolute_uri(
+                reverse('password_reset_confirm', kwargs={
+                    'uidb64': str(usuario.id),
+                    'token': str(token_obj.token)
+                })
+            )
+            
+            # Enviar correo
+            asunto = "Recuperar contraseña - YSJI Fashion"
+            mensaje = f"""
+            Hola {usuario.nombre},
+
+            Recibimos una solicitud para recuperar tu contraseña. 
+            Si no fuiste tú, ignora este correo.
+
+            Para restaurar tu contraseña, haz clic en el siguiente enlace:
+            {reset_url}
+
+            Este enlace expira en 24 horas.
+
+            Saludos,
+            Equipo YSJI Fashion
+            """
+            
+            send_mail(
+                asunto,
+                mensaje,
+                settings.DEFAULT_FROM_EMAIL,
+                [usuario.correo],
+                fail_silently=False
+            )
+            
+            return JsonResponse({
+                'success': True, 
+                'message': 'Se ha enviado un correo con instrucciones para recuperar tu contraseña'
+            })
+            
+        except Usuario.DoesNotExist:
+            # Responder genéricamente para no revelar si el correo existe
+            return JsonResponse({
+                'success': True,
+                'message': 'Si el correo existe en nuestro sistema, recibirás instrucciones de recuperación'
+            })
+        
+        except Exception as e:
+            print(f"Error en password_reset: {str(e)}")
+            return JsonResponse({
+                'success': False,
+                'message': f'Error al procesar la solicitud: {str(e)}'
+            })
+
+
+def password_reset_confirm(request, uidb64, token):
+    """
+    Paso 2: Usuario hace clic en el enlace y cambia su contraseña.
+    """
+    try:
+        usuario = Usuario.objects.get(id=int(uidb64))
+    except (Usuario.DoesNotExist, ValueError):
+        return render(request, 'password_reset.html', {
+            'modo': 'cambiar',
+            'token_invalido': True
+        })
+    
+    try:
+        token_obj = TokenRecuperacion.objects.get(token=token)
+    except TokenRecuperacion.DoesNotExist:
+        return render(request, 'password_reset.html', {
+            'modo': 'cambiar',
+            'token_invalido': True
+        })
+    
+    # Validar token
+    if not token_obj.es_valido():
+        return render(request, 'password_reset.html', {
+            'modo': 'cambiar',
+            'token_invalido': True
+        })
+    
+    if request.method == 'GET':
+        return render(request, 'password_reset.html', {
+            'modo': 'cambiar',
+            'uid': uidb64,
+            'token': token,
+            'token_invalido': False
+        })
+    
+    if request.method == 'POST':
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            try:
+                data = json.loads(request.body)
+                nueva_pass = data.get('nueva', '')
+                confirmar_pass = data.get('confirmar', '')
+            except Exception:
+                return JsonResponse({'success': False, 'message': 'Datos inválidos'})
+        else:
+            nueva_pass = request.POST.get('nueva', '')
+            confirmar_pass = request.POST.get('confirmar', '')
+        
+        # Validar contraseñas
+        if not nueva_pass or not confirmar_pass:
+            return JsonResponse({'success': False, 'message': 'Por favor completa ambos campos'})
+        
+        if nueva_pass != confirmar_pass:
+            return JsonResponse({'success': False, 'message': 'Las contraseñas no coinciden'})
+        
+        if len(nueva_pass) < 6:
+            return JsonResponse({'success': False, 'message': 'La contraseña debe tener al menos 6 caracteres'})
+        
+        try:
+            # Actualizar contraseña
+            usuario.contraseña = make_password(nueva_pass)
+            usuario.save()
+            
+            # Marcar token como usado
+            token_obj.usado = True
+            token_obj.save()
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Contraseña actualizada exitosamente'
+            })
+        
+        except Exception as e:
+            print(f"Error actualizando contraseña: {str(e)}")
+            return JsonResponse({
+                'success': False,
+                'message': f'Error al actualizar la contraseña: {str(e)}'
+            })
 
 # --------- PERFIL DE USUARIO ---------
 @login_required
@@ -613,6 +776,42 @@ def dashboard_view(request):
             'total': round(order_total, 2),
         })
 
+    # -----------------------
+    # Productos con stock bajo -> calcular y añadir al contexto
+    # Usa la misma lógica que el bell: 20% de stock_original o threshold 5
+    # -----------------------
+    from math import ceil
+    out_of_stock_list = []
+    try:
+        productos_low_stock = Producto.objects.select_related('stock').filter(stock__isnull=False).all()
+        for p in productos_low_stock:
+            try:
+                stock_obj = p.stock
+                cantidad_actual = stock_obj.cantidad or 0
+                stock_original = stock_obj.stock_original or 0
+                
+                # Calcular threshold: 20% de stock_original o fallback 5
+                if stock_original and stock_original > 0:
+                    threshold = max(1, ceil(stock_original * 0.2))
+                else:
+                    threshold = 5
+                
+                # Si cantidad_actual <= threshold, añadir a la lista
+                if cantidad_actual <= threshold:
+                    nombre = getattr(p, 'nombre_producto', None) or getattr(p, 'nombre', '') or ''
+                    codigo = getattr(p, 'codigo_producto', None) or getattr(p, 'codigo', '') or ''
+                    out_of_stock_list.append({
+                        'id': p.id,
+                        'producto': p,
+                        'nombre': nombre,
+                        'codigo': codigo,
+                        'cantidad': cantidad_actual,
+                    })
+            except Exception:
+                pass
+    except Exception:
+        out_of_stock_list = []
+
     context = {
         'nuevos_pedidos': nuevos_pedidos,
         'total_usuarios': total_usuarios,
@@ -632,6 +831,7 @@ def dashboard_view(request):
 
         'pipeline': pipeline,
         'recent_orders': recent_orders,
+        'out_of_stock_list': out_of_stock_list,
     }
     return render(request, 'dashboard.html', context)
 
@@ -690,15 +890,49 @@ def AgregarProducto_view(request):
         form = ProductoForm(request.POST, request.FILES, instance=producto_editar)
         if form.is_valid():
             producto = form.save()
+
             # guardar imágenes (si vienen)
             for img in request.FILES.getlist('imagenes'):
                 ImagenProducto.objects.create(producto=producto, imagen=img)
+
+            # Si el admin envió stock_cantidad en el formulario, actualizar/crear el Stock
+            try:
+                stock_val = request.POST.get('stock_cantidad')
+                if stock_val is not None and stock_val != '':
+                    try:
+                        cantidad = int(stock_val)
+                    except Exception:
+                        cantidad = 0
+
+                    # importar Stock localmente por seguridad (no rompe si import global falta)
+                    from .models import Stock as _Stock
+
+                    # Crear si no existe: setear cantidad y stock_original = cantidad
+                    stock_obj, created = _Stock.objects.get_or_create(
+                        producto=producto,
+                        defaults={'cantidad': max(0, cantidad), 'stock_original': max(0, cantidad)}
+                    )
+                    if not created:
+                        # Si ya existía, actualizar ambos campos al nuevo valor proporcionado por el admin.
+                        # Queremos que `stock_original` refleje la nueva cantidad cuando se edita,
+                        # mientras que `cantidad` también se sincroniza para luego reducirse solo por las compras.
+                        try:
+                            stock_obj.stock_original = max(0, cantidad)
+                        except Exception:
+                            # Si por alguna razón el campo no existe, ignoramos para mantener compatibilidad.
+                            pass
+                        stock_obj.cantidad = max(0, cantidad)
+                        stock_obj.save()
+            except Exception:
+                # no romper el flujo por un fallo en stock
+                pass
+
             messages.success(
                 request,
                 "Producto actualizado exitosamente." if producto_editar else "Producto registrado exitosamente.",
                 extra_tags='dashboard'
             )
-            return redirect('AgregarProducto')  # ajusta el nombre de la ruta si es distinto
+            return redirect('AgregarProducto')
         else:
             # marcar error y enviar los errores del form para mostrar al usuario
             errores = []
@@ -709,22 +943,35 @@ def AgregarProducto_view(request):
     else:
         form = ProductoForm(instance=producto_editar)
 
-    # consulta productos (para listado)
-    productos_qs = Producto.objects.all()
+    # consulta productos (para listado) — select_related('stock') ayuda a evitar N+1
+    productos_qs = Producto.objects.select_related('stock').all()
 
-    # construir lista de productos agotados para notificaciones (fuera del loop)
+    # Construir lista de productos con información de stock para notificaciones
     out_of_stock_list = []
     for p in productos_qs:
+        # stock actual (puede ser None si no hay registro)
         try:
             qty = p.stock.cantidad
         except Exception:
             qty = None
-        if qty is None or qty <= 0:
-            out_of_stock_list.append({
-                'id': p.id,
-                'nombre': getattr(p, 'nombre_producto', '') or '',
-                'codigo': getattr(p, 'codigo_producto', '') or ''
-            })
+
+        # intentar leer un campo persistido con el stock original (si añadiste ese campo)
+        stock_original = None
+        try:
+            stock_obj = getattr(p, 'stock', None)
+            if stock_obj is not None:
+                # si el modelo tiene stock_original o un nombre alterno como 'inicial', lo tomamos
+                stock_original = getattr(stock_obj, 'stock_original', None) or getattr(stock_obj, 'inicial', None)
+        except Exception:
+            stock_original = None
+
+        out_of_stock_list.append({
+            'id': p.id,
+            'nombre': getattr(p, 'nombre_producto', '') or '',
+            'codigo': getattr(p, 'codigo_producto', '') or '',
+            'stock_actual': qty,
+            'stock_original': stock_original
+        })
 
     # --- obtener descuentos válidos para seleccionar ---
     descuentos_qs = Descuento.objects.filter(activo=True).filter(
@@ -1598,7 +1845,7 @@ def generar_informe_ventas(request):
 
     # Título
     p.setFont("Helvetica-Bold", 16)
-    p.drawString(200, height - inch, "Informe de Ventas - YSJI Fashi")
+    p.drawString(200, height - inch, "Informe de Ventas - YSJI Fashión")
 
     # Texto descriptivo profesional
     p.setFont("Helvetica", 12)
@@ -1795,33 +2042,131 @@ def generar_factura_pedido(request, pedido_id):
             p.drawString(350, y, linea)
             y -= 15
 
-        # Tabla de productos
+        # Tabla de productos (añadir columna 'Descuento' por línea)
         y -= 30
-        headers = ['Producto', 'Cant.', 'Precio Unit.', 'Total']
+        headers = ['Producto', 'Cant.', 'Precio Unit.', 'Descuento', 'Total']
         data = [headers]
-        
+
         total = 0
         for item in pedido.productos:
-            precio = float(item.get('precio', 0))
-            cantidad = int(item.get('cantidad', 1))
-            subtotal = precio * cantidad
+            # Precios desde el pedido (puede contener precio final) y luego intentar reconstruir precio original
+            precio_reportado = 0.0
+            try:
+                precio_reportado = float(item.get('precio', 0) or 0)
+            except Exception:
+                precio_reportado = 0.0
+            try:
+                cantidad = int(item.get('cantidad', 1) or 1)
+            except Exception:
+                cantidad = 1
+
+            # Intentar buscar producto por código o nombre para calcular descuento en el origen
+            prod = None
+            codigo = item.get('codigo') or item.get('sku') or ''
+            nombre_item = item.get('nombre', 'Producto')
+            if codigo:
+                try:
+                    prod = Producto.objects.filter(codigo_producto__iexact=str(codigo)).first()
+                except Exception:
+                    prod = None
+            if not prod and nombre_item:
+                try:
+                    prod = Producto.objects.filter(nombre_producto__iexact=nombre_item).first()
+                except Exception:
+                    prod = None
+
+            # Determinar precio original y descuento
+            precio_original = None
+            discount_text = ''
+            unit_final_price = precio_reportado
+
+            if prod is not None:
+                try:
+                    precio_original = float(prod.valor_producto or 0)
+                except Exception:
+                    precio_original = None
+                # Si el pedido ya almacena el precio final, use ese; si no, calcule según el descuento del producto
+                if prod.tiene_descuento:
+                    # Calcular descuento por unidad
+                    if prod.descuento.tipo == 'porcentaje':
+                        try:
+                            percent = float(prod.descuento.valor or 0)
+                            discount_amount = (precio_original * percent) / 100.0
+                            discount_text = f"-{int(percent)}%"
+                        except Exception:
+                            discount_amount = 0.0
+                            discount_text = ''
+                    else:
+                        try:
+                            discount_amount = float(prod.descuento.valor or 0)
+                            # formatear a pesos si se usa monto
+                            discount_text = f"-${discount_amount:,.2f}"
+                        except Exception:
+                            discount_amount = 0.0
+                            discount_text = ''
+                    try:
+                        computed_final = max(0.0, precio_original - discount_amount)
+                    except Exception:
+                        computed_final = precio_reportado
+                    # si no hay precio_reportado o está a 0, use el calculado
+                    if precio_reportado <= 0:
+                        unit_final_price = computed_final
+                    else:
+                        # en caso de existir precio_reportado, preferirlo (evita aplicar 2 veces)
+                        unit_final_price = precio_reportado
+                else:
+                    # Sin descuento activo: si el pedido nos trae un precio menor que el original,
+                    # inferir el descuento histórico (por ejemplo pedido registrado con descuento ya aplicado)
+                    if precio_original is not None:
+                        if precio_reportado > 0 and precio_reportado < precio_original:
+                            discount_amount = precio_original - precio_reportado
+                            # mostrar como porcentaje si resulta entero el %
+                            try:
+                                percent = round((discount_amount / precio_original) * 100)
+                                if percent > 0:
+                                    discount_text = f"-{percent}%"
+                                else:
+                                    discount_text = f"${discount_amount:,.2f}"
+                            except Exception:
+                                discount_text = f"${discount_amount:,.2f}"
+                            unit_final_price = precio_reportado
+                        else:
+                            discount_text = ''
+                            if precio_reportado <= 0:
+                                unit_final_price = precio_original
+                            else:
+                                unit_final_price = precio_reportado
+            else:
+                # Si no se encontró product, pero precio_reportado se puede usar
+                discount_text = ''
+                if precio_reportado <= 0:
+                    precio_reportado = 0.0
+                unit_final_price = precio_reportado
+
+            subtotal = unit_final_price * cantidad
             total += subtotal
-            
+
+            # Re-format prices para PDF
+            precio_unit_str = f"${(precio_original if precio_original is not None else unit_final_price):,.2f}"
+            descuento_str = discount_text or '-' 
+            subtotal_str = f"${subtotal:,.2f}"
+
             data.append([
-                item.get('nombre', 'Producto'),
+                nombre_item,
                 str(cantidad),
-                f"${precio:,.2f}",
-                f"${subtotal:,.2f}"
+                precio_unit_str,
+                descuento_str,
+                subtotal_str
             ])
 
-        # Agregar totales
-        data.append(['', '', 'Subtotal:', f"${total:,.2f}"])
+        # Agregar totales (ajustar para 5 columnas)
+        data.append(['', '', '', 'Subtotal:', f"${total:,.2f}"])
         iva = total * 0.19
-        data.append(['', '', 'IVA (19%):', f"${iva:,.2f}"])
-        data.append(['', '', 'Total:', f"${(total + iva):,.2f}"])
+        data.append(['', '', '', 'IVA (19%):', f"${iva:,.2f}"])
+        data.append(['', '', '', 'Total:', f"${(total + iva):,.2f}"])
 
         # Estilos de la tabla
-        table = Table(data, colWidths=[280, 60, 100, 100])
+        table = Table(data, colWidths=[220, 50, 110, 80, 100])
         table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, 0), COLOR_PRINCIPAL),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -1834,7 +2179,8 @@ def generar_factura_pedido(request, pedido_id):
             ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
             ('FONTNAME', (0, -3), (-1, -1), 'Helvetica-Bold'),
             ('FONTSIZE', (0, 1), (-1, -1), 9),
-            ('ALIGN', (-2, -3), (-1, -1), 'RIGHT'),
+            # Alinear a la derecha las columnas numéricas: Precio Unit., Descuento, Total
+            ('ALIGN', (2, 1), (4, -1), 'RIGHT'),
             ('GRID', (0, 0), (-1, -1), 1, COLOR_SECUNDARIO)
         ]))
         
@@ -1978,3 +2324,6 @@ def cambiar_estado_descuento(request, id):
         return JsonResponse({'success': True, 'activo': descuento.activo})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
+    
+    
+    

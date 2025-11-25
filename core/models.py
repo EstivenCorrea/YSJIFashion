@@ -25,7 +25,6 @@ class Usuario(models.Model):
         return self.nombre
 
     class Meta:
-        managed = True 
         db_table = 'usuarios'
 
 
@@ -36,7 +35,6 @@ class Pedido(models.Model):
     fecha = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        managed = True 
         db_table = 'pedidos'
 
     @property
@@ -70,8 +68,8 @@ class Descuento(models.Model):
     creado_en = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        managed = True 
-        db_table = 'descuentos' 
+        managed = False  # 👉 Importante: Django no creará la tabla
+        db_table = 'descuentos'  # nombre real de tu tabla MySQL
         ordering = ['-creado_en']
 
     def __str__(self):
@@ -190,7 +188,7 @@ class ImagenProducto(models.Model):
 
     class Meta:
         db_table = 'imagenproducto'
-        managed = True
+        managed = False  # Si la creas tú manualmente
 
 class Proveedor(models.Model):
     nombre = models.CharField(max_length=100)
@@ -203,7 +201,6 @@ class Proveedor(models.Model):
         return self.nombre
 
     class Meta:
-        managed = True 
         db_table = 'proveedor'
 
 
@@ -216,7 +213,6 @@ class Marca(models.Model):
     )
 
     class Meta:
-        managed = True 
         db_table = 'marca' 
 
     def __str__(self):
@@ -232,7 +228,6 @@ class Categoria(models.Model):
         return self.nombre
         
     class Meta:
-        managed = True 
         db_table = 'categoria'
         verbose_name = "Categoría"
         verbose_name_plural = "Categorías"
@@ -269,7 +264,6 @@ class Stock(models.Model):
 
 
     class Meta:
-        managed = True 
         db_table = 'stock'
 
     def __str__(self):
@@ -341,7 +335,6 @@ class TokenRecuperacion(models.Model):
     usado = models.BooleanField(default=False)
 
     class Meta:
-        managed = True 
         db_table = 'token_recuperacion'
 
     def __str__(self):
