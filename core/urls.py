@@ -3,6 +3,7 @@ from . import views
 from .views import usuarios_lista
 from .views import buscar_view
 
+
 urlpatterns = [
     #Inicio
     path('', views.index_view, name='index'), 
@@ -13,6 +14,8 @@ urlpatterns = [
     #Login
     path('login/', views.login_register_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
+    path('password-reset/', views.password_reset, name='password_reset'),
+    path('password-reset-confirm/<int:uidb64>/<str:token>/', views.password_reset_confirm, name='password_reset_confirm'),
 
     #Cliente
     path('cuenta/', views.cuenta_view, name='cuenta'),
@@ -96,7 +99,10 @@ urlpatterns = [
     path('dashboard/descuentos/editar/<int:id>/', views.editar_descuento, name='editar_descuento'),
     path('dashboard/descuentos/eliminar/<int:id>/', views.eliminar_descuento, name='eliminar_descuento'),
     path('dashboard/descuentos/estado/<int:id>/', views.cambiar_estado_descuento, name='cambiar_estado_descuento'),
-
+    
+    # Recuperación de contraseña
+   
+    
 
 
 ]

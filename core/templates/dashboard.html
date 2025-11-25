@@ -53,6 +53,71 @@
 .order .meta{ color:var(--muted); font-size:13px; }
 .order .price { font-weight:700; color:var(--accent-gold); }
 
+/* Low stock panel - Acorde al sitio */
+.low-stock-panel { 
+  background: linear-gradient(135deg, #ffffff, #fee0e0);
+  border-left: 5px solid #ff0000;
+  border-radius: 12px;
+}
+.low-stock-panel h4 { 
+  color: #000000;
+  margin: 0 0 12px 0; 
+  display: flex; 
+  align-items: center; 
+  gap: 8px;
+  font-weight: 700;
+  font-size: 15px;
+}
+.low-stock-panel .stock-icon { 
+  width: 22px; 
+  height: 22px; 
+  display: inline-flex; 
+  align-items: center; 
+  justify-content: center;
+  flex-shrink: 0;
+}
+.low-stock-item { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  padding: 12px;
+  background: white;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  border: 1px solid #febfbf;
+  box-shadow: 0 2px 4px rgba(2, 132, 199, 0.08);
+  transition: all 0.2s ease;
+}
+.low-stock-item:hover {
+  border-color: #c70202;
+  box-shadow: 0 4px 8px rgba(2, 132, 199, 0.12);
+}
+.low-stock-item:last-child { margin-bottom: 0; }
+.low-stock-item .info { flex: 1; }
+.low-stock-item .info strong { 
+  color: #0c0c0c;
+  font-weight: 700; 
+  display: block; 
+  font-size: 14px;
+  line-height: 1.4;
+}
+.low-stock-item .info .code { 
+  color: #000000;
+  font-size: 12px; 
+  margin: 3px 0 0 0;
+  font-family: 'Courier New', monospace;
+}
+.low-stock-item .badge { 
+  color: rgb(0, 0, 0); 
+  padding: 6px 12px; 
+  border-radius: 6px; 
+  font-weight: 700; 
+  font-size: 12px;
+  margin-left: 8px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
 /* Responsive */
 @media (max-width:900px){
   .kpis { grid-template-columns: 1fr; }
@@ -146,7 +211,7 @@
             <h4>Ventas por categoría</h4>
             <canvas id="ventasBar" height="220"></canvas>
           </div>
-
+          
           <div class="panel chart-card">
             <h4>Producto más vendido (Top)</h4>
             <canvas id="ventasDoughnut" height="220"></canvas>
@@ -163,6 +228,34 @@
     </div>
 
     <div style="display:flex; flex-direction:column; gap:12px;">
+      <div class="panel low-stock-panel">
+        <h4>
+          <svg class="stock-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m1 15h-2v-2h2v2m0-4h-2V9h2v4z"/>
+          </svg>
+          Productos con Stock Bajo
+        </h4>
+        <div id="out-of-stock-list">
+          {% for p in out_of_stock_list %}
+            <div class="low-stock-item">
+              <div class="info">
+                <strong>{{ p.nombre }}</strong>
+                <div class="code">{{ p.codigo }}</div>
+              </div>
+              <div class="badge">
+                {% if p.cantidad is not None %}
+                  {{ p.cantidad }} ud
+                {% else %}
+                  0 ud
+                {% endif %}
+              </div>
+            </div>
+          {% empty %}
+            <p class="meta" style="text-align: center; padding: 20px 10px; color: #92400e;">✓ Sin problemas de stock</p>
+          {% endfor %}
+        </div>
+      </div>
+
       <div class="panel recent">
         <h4>Pedidos recientes</h4>
         <div id="recent-list">

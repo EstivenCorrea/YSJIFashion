@@ -93,16 +93,17 @@ WSGI_APPLICATION = 'ysjifashion.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'ysji_crud',           # el nombre de tu base de datos
-        'USER': 'root',           # tu usuario de MySQL
-        'PASSWORD': '',           # tu contraseña (vacía si no tienes)
-        'HOST': 'localhost',
+        'NAME': 'ysji_crud',          # nombre de tu BD en phpMyAdmin
+        'USER': 'root',                # tu usuario de MySQL
+        'PASSWORD': '',                # tu contraseña
+        'HOST': 'host.docker.internal', # conecta al MySQL de tu máquina desde Docker
         'PORT': '3306',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
         }
     }
 }
+
 
 
 # Password validation
@@ -191,6 +192,18 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
+# -----------------------------
+# CONFIGURACIÓN DE CORREO SMTP
+# -----------------------------
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'            # Servidor SMTP de Gmail
+EMAIL_PORT = 587                          # Puerto TLS
+EMAIL_USE_TLS = True                      # Habilita TLS
+EMAIL_HOST_USER = os.getenv('EMAIL_USER')      # Tu correo Gmail (puedes guardarlo en .env)
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASS')  # App Password de Gmail (NO tu contraseña normal)
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 
 
 
@@ -202,6 +215,8 @@ SOCIALACCOUNT_PROVIDERS = {
 PAYPAL_CLIENT_ID = "AfFmoNGhHVg4hXOHy6wtl10KQZNu9qmKPy5oNMw3EFtvJfQtvb_JdyZyv2W2fB30HMqDv1qym_FBIZ6v"
 PAYPAL_CLIENT_SECRET = "EDIzN1By-VddpXTSsQw7yIWLYQd9mKYOL2ZWYXBomFlXnblS29eQW4AYnLlBPP9fB6kEdkeU0x0rCoQU"
 PAYPAL_MERCHANT_EMAIL = "sb-bczpb47129738@personal.example.com"
+
+
 
 
 

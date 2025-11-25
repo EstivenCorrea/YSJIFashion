@@ -1,0 +1,112 @@
+.error-message {
+    color: red;
+    font-size: 0.85em;
+    margin-top: 4px;
+    display: none;
+  }
+  .input-error {
+    border-color: red !important;
+  }
+  /* Campana de notificaciones de stock */
+  /* Estilos mejorados para la campana de stock */
+  .stock-bell {
+    position: absolute;
+    right: 18px;
+    top: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #111827; /* color del icono */
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+    cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    z-index: 30;
+  }
+  .stock-bell:focus {
+    outline: none;
+    box-shadow: 0 6px 22px rgba(13, 110, 253, 0.18);
+    transform: translateY(-1px);
+  }
+
+  /* Icono SVG */
+  .stock-bell .stock-bell-icon {
+    width: 20px;
+    height: 20px;
+    display: block;
+  }
+
+  /* Badge */
+  .badge-bell {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #dc3545, #b91c1c);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    display: none; /* se muestra con JS cuando hay notificaciones */
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+    line-height: 18px;
+  }
+
+  /* Clase que indica notificaciones activas (activa animación) */
+  .stock-bell.has-notifications {
+    animation: bell-pop 0.45s ease;
+    transform: translateY(-2px);
+  }
+  @keyframes bell-pop {
+    0% {
+      transform: translateY(0) scale(1);
+    }
+    40% {
+      transform: translateY(-6px) scale(1.06);
+    }
+    100% {
+      transform: translateY(-2px) scale(1);
+    }
+  }
+
+  /* Pequeña animación de pulso para la badge */
+  .stock-bell.has-notifications .badge-bell {
+    display: inline-flex;
+    animation: pulse 1.6s infinite;
+  }
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.45);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+    }
+  }
+
+  /* Responsive: reducir tamaño en pantallas pequeñas */
+  @media (max-width: 576px) {
+    .stock-bell {
+      right: 10px;
+      top: 10px;
+      width: 40px;
+      height: 40px;
+    }
+    .badge-bell {
+      top: -5px;
+      right: -5px;
+      min-width: 18px;
+      height: 18px;
+      font-size: 11px;
+    }
+  }

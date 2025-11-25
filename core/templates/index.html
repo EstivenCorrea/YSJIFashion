@@ -26,6 +26,48 @@
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+        <style>
+            /* Small CSS helpers for discount ribbons on the index page */
+            .ribbon-discount {
+                position: absolute;
+                top: 12px;
+                right: -32px;
+                transform: rotate(45deg);
+                background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+                color: white;
+                padding: 6px 44px;
+                font-weight: 800;
+                font-size: 12px;
+                box-shadow: 0 3px 8px rgba(0,0,0,0.18);
+                z-index: 10;
+                text-align: center;
+            }
+                        .price-original { text-decoration: line-through; color: #999; font-size: 0.95rem; margin-right: 8px; }
+                        .price-discounted { color: #ff3b3b; font-weight: 700; font-size: 1.05rem; }
+                        .discount-badge { background: #ff3b3b; color: white; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; margin-left: 8px; }
+
+                        /* Ensure price elements align and wrap nicely */
+                        .why-text h5 { display: inline-flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
+                        .discount-badge { display:inline-block; white-space:nowrap; }
+                        .why-text h5 > * { min-width: 0; }
+
+                        @media (max-width: 768px) {
+                            .why-text h5 { font-size: 1.1rem; gap: 6px; }
+                            .price-original { font-size: 0.95rem; }
+                            .price-discounted { font-size: 1rem; }
+                            .discount-badge { font-size: 0.75rem; padding: 3px 6px; }
+                            .box-img-hover { height: 220px; }
+                        }
+
+                        @media (max-width: 420px) {
+                            .why-text h5 { font-size: 1rem; gap: 6px; }
+                            .price-original { font-size: 0.9rem; }
+                            .price-discounted { font-size: 0.95rem; }
+                            .discount-badge { font-size: 0.72rem; padding: 2px 6px; }
+                            .ribbon-discount { transform: rotate(45deg); right: -18px; padding: 4px 28px; font-size: 10px; }
+                            .box-img-hover { height: 200px; }
+                        }
+        </style>
 </head>
 
 <body>
@@ -399,8 +441,8 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="title-all text-center">
-                        <h1>Productos Destacados</h1>
-                        <p>Conoce los productos más vendidos este 2025</p>
+                        <h1>Productos en Descuento</h1>
+                        <p>Aprovecha las mejores ofertas disponibles ahora</p>
                     </div>
                 </div>
             </div>
@@ -423,9 +465,9 @@
                     <div class="products-single fix">
                         <div class="box-img-hover">
                             <div class="type-lb">
-                                <p class="{% if forloop.counter|divisibleby:2 %}new{% else %}sale{% endif %}">
-                                    {% if forloop.counter|divisibleby:2 %}Nuevo{% else %}Venta{% endif %}
-                                </p>
+                                <!--<p class="{% if forloop.counter|divisibleby:2 %}new{% else %}sale{% endif %}">
+                                    {% if forloop.counter|divisibleby:2 %}Nuevo{% else %}Venta{% endif %} 
+                                </p> -->
                             </div>
 
                             {% if producto.imagenes.first %}
@@ -436,6 +478,11 @@
                                 class="img-fluid">
                             {% else %}
                             <img src="{% static 'images/no-image.png' %}" alt="Sin imagen" class="img-fluid">
+                            {% endif %}
+
+                            {% if producto.tiene_descuento %}
+                            <!-- Ribbon para producto con descuento -->
+                            <div class="ribbon-discount">{{ producto.texto_ribbon }}</div>
                             {% endif %}
 
 
@@ -456,7 +503,15 @@
                         </div>
                         <div class="why-text">
                             <h4>{{ producto.nombre_producto }}</h4>
-                            <h5>${{ producto.valor_producto|floatformat:0 }}</h5>
+                            {% if producto.tiene_descuento %}
+                                <h5>
+                                    <span class="price-original">${{ producto.valor_producto|intcomma }} COP</span>
+                                    <span class="price-discounted">${{ producto.precio_final|intcomma }} COP</span>
+                                    <span class="discount-badge">{{ producto.texto_ribbon }}</span>
+                                </h5>
+                            {% else %}
+                                <h5>${{ producto.valor_producto|intcomma }} COP</h5>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

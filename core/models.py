@@ -25,6 +25,7 @@ class Usuario(models.Model):
         return self.nombre
 
     class Meta:
+        managed = True 
         db_table = 'usuarios'
 
 
@@ -35,16 +36,20 @@ class Pedido(models.Model):
     fecha = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        managed = True 
         db_table = 'pedidos'
 
     @property
     def total(self):
-            total = 0
-            for item in self.productos:
-                precio = item.get("precio", 0)
-                cantidad = item.get("cantidad", 1)
+        total = 0
+        for item in self.productos:
+            try:
+                precio = float(item.get("precio", 0))
+                cantidad = int(item.get("cantidad", 1))
                 total += precio * cantidad
-            return total
+            except Exception:
+                continue
+        return total
 
 
 
@@ -65,8 +70,8 @@ class Descuento(models.Model):
     creado_en = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        managed = False  # 👉 Importante: Django no creará la tabla
-        db_table = 'descuentos'  # nombre real de tu tabla MySQL
+        managed = True 
+        db_table = 'descuentos' 
         ordering = ['-creado_en']
 
     def __str__(self):
@@ -185,7 +190,7 @@ class ImagenProducto(models.Model):
 
     class Meta:
         db_table = 'imagenproducto'
-        managed = False  # Si la creas tú manualmente
+        managed = True
 
 class Proveedor(models.Model):
     nombre = models.CharField(max_length=100)
@@ -198,6 +203,7 @@ class Proveedor(models.Model):
         return self.nombre
 
     class Meta:
+        managed = True 
         db_table = 'proveedor'
 
 
@@ -210,6 +216,7 @@ class Marca(models.Model):
     )
 
     class Meta:
+        managed = True 
         db_table = 'marca' 
 
     def __str__(self):
@@ -225,6 +232,7 @@ class Categoria(models.Model):
         return self.nombre
         
     class Meta:
+        managed = True 
         db_table = 'categoria'
         verbose_name = "Categoría"
         verbose_name_plural = "Categorías"
@@ -257,8 +265,11 @@ class Mensaje(models.Model):
 class Stock(models.Model):
     producto = models.OneToOneField(Producto, on_delete=models.CASCADE, related_name='stock')
     cantidad = models.PositiveIntegerField(default=0)
+    stock_original = models.PositiveIntegerField(null=True, blank=True, help_text="Stock inicial/predeterminado para calcular porcentajes")
+
 
     class Meta:
+        managed = True 
         db_table = 'stock'
 
     def __str__(self):
@@ -315,4 +326,51 @@ class Factura(models.Model):
     def __str__(self):
         return f"{self.producto} - {self.estado}"
 
+
+# =====================================
+# Modelo para recuperación de contraseña
+# =====================================
+import uuid
+from datetime import timedelta
+
+class TokenRecuperacion(models.Model):
+    usuario_id = models.IntegerField()  # Referencia manual a usuario.id
+    token = models.CharField(max_length=255, unique=True, default=uuid.uuid4)
+    creado_en = models.DateTimeField(auto_now_add=True)
+    expira_en = models.DateTimeField()
+    usado = models.BooleanField(default=False)
+
+    class Meta:
+        managed = True 
+        db_table = 'token_recuperacion'
+
+    def __str__(self):
+        try:
+            usuario = Usuario.objects.get(id=self.usuario_id)
+            return f"Token para {usuario.nombre}"
+        except:
+            return f"Token para usuario {self.usuario_id}"
+
+    @classmethod
+    def crear_token(cls, usuario):
+        """Crea un nuevo token válido por 24 horas."""
+        from django.utils import timezone
+        expira_en = timezone.now() + timedelta(hours=24)
+        token = cls.objects.create(
+            usuario_id=usuario.id,
+            expira_en=expira_en
+        )
+        return token
+
+    def es_valido(self):
+        """Verifica si el token es válido y no ha expirado."""
+        from django.utils import timezone
+        return not self.usado and self.expira_en > timezone.now()
+    
+    def get_usuario(self):
+        """Obtiene el usuario relacionado."""
+        try:
+            return Usuario.objects.get(id=self.usuario_id)
+        except Usuario.DoesNotExist:
+            return None
          

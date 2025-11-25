@@ -89,11 +89,11 @@
     <!-- Precios -->
     <div class="mb-2">
       {% if producto.tiene_descuento %}
-        <span class="price-original">${{ producto.valor_producto|intcomma }} COP</span>
-        <span class="price-discounted">${{ producto.precio_final|intcomma }} COP</span>
+        <span class="price-original">${{ producto.valor_producto|floatformat:0|intcomma }} COP</span>
+        <span class="price-discounted">${{ producto.precio_final|floatformat:0|intcomma }} COP</span>
         <span class="discount-badge">{{ producto.texto_ribbon }}</span>
       {% else %}
-        <span class="price-discounted" style="color:#333;">${{ producto.valor_producto|intcomma }} COP</span>
+        <span class="price-discounted" style="color:#333;">${{ producto.valor_producto|floatformat:0|intcomma }} COP</span>
       {% endif %}
     </div>
 

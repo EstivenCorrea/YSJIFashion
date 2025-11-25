@@ -77,7 +77,7 @@
     <h2>{{ producto.nombre_producto }}</h2>
     <p><strong>Codigo:</strong> {{ producto.codigo_producto }}</p>
     <p style="white-space: pre-wrap;"><strong>Descripción:</strong> {{ producto.descripcion_producto }}</p>
-    <p><strong>Valor:</strong> ${{ producto.valor_producto|intcomma }} Cop</p>
+    <p><strong>Valor:</strong> ${{ producto.valor_producto|floatformat:0|intcomma }} Cop</p>
     <p><strong>Cantidad:</strong> {% if producto.stock %}{{ producto.stock.cantidad }}{% else %}{{ producto.cantidad_producto|default:'-' }}{% endif %}</p>
     <p><strong>Categoría:</strong> {% if producto.categoria %}{{ producto.categoria.nombre }}{% else %}{{ producto.categoria_producto }}{% endif %}</p>
     <p><strong>Tallas disponibles:</strong> {{ producto.tallas_disponibles }}</p>

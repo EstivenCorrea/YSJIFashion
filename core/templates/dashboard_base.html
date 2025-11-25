@@ -10,11 +10,12 @@
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="{% static 'css/boar.css'%}" />
+    
     <link rel="apple-touch-icon" href="{% static 'images/logo.jpg' %}" />
     <link rel="stylesheet" href="{% static 'css/st.css' %}" />
     <link rel="stylesheet" href="{% static 'css/s.css' %}" />
     <link rel="stylesheet" href="{% static 'css/productos.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/boar.css'%}" />
     <style>
        .admin-profile-sidebar {
             background: #fff;
@@ -124,7 +125,7 @@
           </li>
           <li class="{% if request.path == '/usuarios/' %}active{% endif %}">
             <a href="{% url 'dashboard_usuarios' %}">
-              <ion-icon name="person-outline"></ion-icon>
+              <ion-icon name="people-outline"></ion-icon>
               <span>Usuarios</span>
             </a>
           </li>
@@ -154,28 +155,28 @@
                 <span>Marcas</span>
               </a>
             </li>
-            <li class="{% if request.path == '/marcas/' %}active{% endif %}">
+            <li class="{% if request.path == '/dashboard/categorias/' %}active{% endif %}">
               <a href="{% url 'dashboard_categorias' %}">
-                <ion-icon name="pricetags-outline"></ion-icon>
+                <ion-icon name="list-outline"></ion-icon>
                 <span>Categorías</span>
               </a>
             </li>
-          <li class="{% if request.path == '/periodico/' %}active{% endif %}">
+          <li class="{% if request.path == '/blogs/' %}active{% endif %}">
             <a href="{% url 'blog_list' %}">
               <ion-icon name="newspaper-outline"></ion-icon>
               <span>Blog</span>
             </a>
           </li>
-           <li class="{% if request.path == '/mensaje/' %}active{% endif %}">
+           <li class="{% if request.path == '/dashboard/contactos/' %}active{% endif %}">
             <a href="{% url 'dashboard_contacto' %}">
-              <ion-icon name="chatbubble-outline"></ion-icon>
+              <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
 
               <span>Mensajes</span>
             </a>
           </li>
-          <li class="{% if request.path == '/descuentos/' %}active{% endif %}">
+          <li class="{% if request.path == '/dashboard/descuentos/' %}active{% endif %}">
             <a href="{% url 'dashboard_descuentos' %}">
-              <ion-icon name="newspaper-outline"></ion-icon>
+              <ion-icon name="gift-outline"></ion-icon>
               <span>Descuentos</span>
             </a>
           </li>

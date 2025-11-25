@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 28-09-2025 a las 05:17:39
+-- Tiempo de generación: 23-11-2025 a las 18:07:27
 -- Versión del servidor: 8.4.3
 -- Versión de PHP: 8.3.16
 
@@ -20,6 +20,42 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `ysji_crud`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `account_emailaddress`
+--
+
+CREATE TABLE `account_emailaddress` (
+  `id` int NOT NULL,
+  `email` varchar(254) NOT NULL,
+  `verified` tinyint(1) NOT NULL,
+  `primary` tinyint(1) NOT NULL,
+  `user_id` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `account_emailaddress`
+--
+
+INSERT INTO `account_emailaddress` (`id`, `email`, `verified`, `primary`, `user_id`) VALUES
+(1, 'sebastiancarrillo400@gmail.com', 1, 1, 1),
+(2, 'sebastianlargogutierrez@gmail.com', 1, 1, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `account_emailconfirmation`
+--
+
+CREATE TABLE `account_emailconfirmation` (
+  `id` int NOT NULL,
+  `created` datetime(6) NOT NULL,
+  `sent` datetime(6) DEFAULT NULL,
+  `key` varchar(64) NOT NULL,
+  `email_address_id` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -121,7 +157,43 @@ INSERT INTO `auth_permission` (`id`, `name`, `content_type_id`, `codename`) VALU
 (57, 'Can add mensaje', 15, 'add_mensaje'),
 (58, 'Can change mensaje', 15, 'change_mensaje'),
 (59, 'Can delete mensaje', 15, 'delete_mensaje'),
-(60, 'Can view mensaje', 15, 'view_mensaje');
+(60, 'Can view mensaje', 15, 'view_mensaje'),
+(61, 'Can add email address', 16, 'add_emailaddress'),
+(62, 'Can change email address', 16, 'change_emailaddress'),
+(63, 'Can delete email address', 16, 'delete_emailaddress'),
+(64, 'Can view email address', 16, 'view_emailaddress'),
+(65, 'Can add email confirmation', 17, 'add_emailconfirmation'),
+(66, 'Can change email confirmation', 17, 'change_emailconfirmation'),
+(67, 'Can delete email confirmation', 17, 'delete_emailconfirmation'),
+(68, 'Can view email confirmation', 17, 'view_emailconfirmation'),
+(69, 'Can add stock', 18, 'add_stock'),
+(70, 'Can change stock', 18, 'change_stock'),
+(71, 'Can delete stock', 18, 'delete_stock'),
+(72, 'Can view stock', 18, 'view_stock'),
+(73, 'Can add site', 19, 'add_site'),
+(74, 'Can change site', 19, 'change_site'),
+(75, 'Can delete site', 19, 'delete_site'),
+(76, 'Can view site', 19, 'view_site'),
+(77, 'Can add social account', 20, 'add_socialaccount'),
+(78, 'Can change social account', 20, 'change_socialaccount'),
+(79, 'Can delete social account', 20, 'delete_socialaccount'),
+(80, 'Can view social account', 20, 'view_socialaccount'),
+(81, 'Can add social application', 21, 'add_socialapp'),
+(82, 'Can change social application', 21, 'change_socialapp'),
+(83, 'Can delete social application', 21, 'delete_socialapp'),
+(84, 'Can view social application', 21, 'view_socialapp'),
+(85, 'Can add social application token', 22, 'add_socialtoken'),
+(86, 'Can change social application token', 22, 'change_socialtoken'),
+(87, 'Can delete social application token', 22, 'delete_socialtoken'),
+(88, 'Can view social application token', 22, 'view_socialtoken'),
+(89, 'Can add descuento', 23, 'add_descuento'),
+(90, 'Can change descuento', 23, 'change_descuento'),
+(91, 'Can delete descuento', 23, 'delete_descuento'),
+(92, 'Can view descuento', 23, 'view_descuento'),
+(93, 'Can add factura', 24, 'add_factura'),
+(94, 'Can change factura', 24, 'change_factura'),
+(95, 'Can delete factura', 24, 'delete_factura'),
+(96, 'Can view factura', 24, 'view_factura');
 
 -- --------------------------------------------------------
 
@@ -142,6 +214,14 @@ CREATE TABLE `auth_user` (
   `is_active` tinyint(1) NOT NULL,
   `date_joined` datetime(6) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `auth_user`
+--
+
+INSERT INTO `auth_user` (`id`, `password`, `last_login`, `is_superuser`, `username`, `first_name`, `last_name`, `email`, `is_staff`, `is_active`, `date_joined`) VALUES
+(1, '!J73naHWibTzk2msoQ7SIhiyU7gRCAoQ3ZNSMbpdg', '2025-11-23 00:51:50.908009', 0, 'sebastian', 'sebastian', 'carrillo gutierrez', 'sebastiancarrillo400@gmail.com', 0, 1, '2025-10-30 21:20:08.855000'),
+(2, '!aO8k0kcljkzdFSu0bpKx2nVPiWwHODVZZl4OU7ji', '2025-11-23 15:46:16.633642', 0, 'sebastian8', 'sebastian', 'largo', 'sebastianlargogutierrez@gmail.com', 0, 1, '2025-11-23 15:35:26.163000');
 
 -- --------------------------------------------------------
 
@@ -174,9 +254,25 @@ CREATE TABLE `auth_user_user_permissions` (
 --
 
 CREATE TABLE `categoria` (
-  `id` bigint NOT NULL,
-  `nombre` varchar(100) NOT NULL
+  `id` int NOT NULL,
+  `nombre` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `categoria`
+--
+
+INSERT INTO `categoria` (`id`, `nombre`) VALUES
+(1, 'Abrigos'),
+(3, 'Chaquetas'),
+(4, 'Pantalones'),
+(5, 'Vestidos'),
+(6, 'Bolsos'),
+(7, 'Sacos'),
+(8, 'Camisetas'),
+(9, 'Faldas'),
+(10, 'Jeans'),
+(11, 'Accesorios');
 
 -- --------------------------------------------------------
 
@@ -203,6 +299,22 @@ INSERT INTO `core_blog` (`id`, `titulo`, `cuerpo`, `foto`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `core_factura`
+--
+
+CREATE TABLE `core_factura` (
+  `id` bigint NOT NULL,
+  `invoice_id` varchar(100) NOT NULL,
+  `email_cliente` varchar(254) NOT NULL,
+  `producto` varchar(200) NOT NULL,
+  `precio` decimal(10,2) NOT NULL,
+  `estado` varchar(50) NOT NULL,
+  `creada_en` datetime(6) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `core_mensaje`
 --
 
@@ -210,7 +322,7 @@ CREATE TABLE `core_mensaje` (
   `id` bigint NOT NULL,
   `nombre` varchar(100) NOT NULL,
   `correo` varchar(254) NOT NULL,
-  `telefono` varchar(20) NOT NULL,
+  `telefono` varchar(15) NOT NULL,
   `mensaje` longtext NOT NULL,
   `fecha` datetime(6) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -257,6 +369,38 @@ CREATE TABLE `core_usuario` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `descuentos`
+--
+
+CREATE TABLE `descuentos` (
+  `id` int NOT NULL,
+  `codigo` varchar(50) DEFAULT NULL,
+  `nombre` varchar(120) NOT NULL,
+  `descripcion` text,
+  `tipo` varchar(20) DEFAULT 'porcentaje',
+  `valor` decimal(12,2) DEFAULT '0.00',
+  `max_uso` int DEFAULT NULL,
+  `usos_realizados` int DEFAULT '0',
+  `aplicable_a` varchar(30) DEFAULT 'todos',
+  `fecha_inicio` datetime DEFAULT NULL,
+  `fecha_fin` datetime DEFAULT NULL,
+  `activo` tinyint(1) DEFAULT '1',
+  `observaciones` text,
+  `creado_en` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `descuentos`
+--
+
+INSERT INTO `descuentos` (`id`, `codigo`, `nombre`, `descripcion`, `tipo`, `valor`, `max_uso`, `usos_realizados`, `aplicable_a`, `fecha_inicio`, `fecha_fin`, `activo`, `observaciones`, `creado_en`) VALUES
+(1, '291', 'BLACK FRIDAY', NULL, 'porcentaje', 90.00, NULL, 0, NULL, '2025-11-17 00:00:00', '2025-11-30 00:00:00', 1, NULL, '2025-11-06 23:26:14'),
+(4, '12312', 'VERANO', NULL, 'monto', 90000.00, NULL, 0, 'todos', '2025-11-16 00:00:00', '2025-11-30 00:00:00', 1, NULL, '2025-11-07 01:41:06'),
+(10, '2714', 'INVIERNO', NULL, 'porcentaje', 50.00, NULL, 0, 'todos', '2025-11-16 00:00:00', '2025-11-30 00:00:00', 1, NULL, '2025-11-16 22:24:23');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `django_admin_log`
 --
 
@@ -269,7 +413,7 @@ CREATE TABLE `django_admin_log` (
   `change_message` longtext NOT NULL,
   `content_type_id` int DEFAULT NULL,
   `user_id` int NOT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -288,6 +432,8 @@ CREATE TABLE `django_content_type` (
 --
 
 INSERT INTO `django_content_type` (`id`, `app_label`, `model`) VALUES
+(16, 'account', 'emailaddress'),
+(17, 'account', 'emailconfirmation'),
 (1, 'admin', 'logentry'),
 (3, 'auth', 'group'),
 (2, 'auth', 'permission'),
@@ -295,14 +441,21 @@ INSERT INTO `django_content_type` (`id`, `app_label`, `model`) VALUES
 (5, 'contenttypes', 'contenttype'),
 (14, 'core', 'blog'),
 (7, 'core', 'categoria'),
+(23, 'core', 'descuento'),
+(24, 'core', 'factura'),
 (6, 'core', 'imagenproducto'),
 (8, 'core', 'marca'),
 (15, 'core', 'mensaje'),
 (12, 'core', 'pedido'),
 (11, 'core', 'producto'),
 (9, 'core', 'proveedor'),
+(18, 'core', 'stock'),
 (10, 'core', 'usuario'),
-(13, 'sessions', 'session');
+(13, 'sessions', 'session'),
+(19, 'sites', 'site'),
+(20, 'socialaccount', 'socialaccount'),
+(21, 'socialaccount', 'socialapp'),
+(22, 'socialaccount', 'socialtoken');
 
 -- --------------------------------------------------------
 
@@ -341,7 +494,27 @@ INSERT INTO `django_migrations` (`id`, `app`, `name`, `applied`) VALUES
 (17, 'auth', '0012_alter_user_first_name_max_length', '2025-09-17 23:47:50.731074'),
 (18, 'core', '0001_initial', '2025-09-17 23:47:50.810688'),
 (19, 'sessions', '0001_initial', '2025-09-18 00:58:12.782901'),
-(20, 'core', '0002_mensaje', '2025-09-28 03:34:04.058966');
+(20, 'core', '0002_mensaje', '2025-09-28 03:34:04.058966'),
+(21, 'account', '0001_initial', '2025-10-30 21:16:06.296350'),
+(22, 'account', '0002_email_max_length', '2025-10-30 21:16:06.355897'),
+(23, 'account', '0003_alter_emailaddress_create_unique_verified_email', '2025-10-30 21:16:06.475797'),
+(24, 'account', '0004_alter_emailaddress_drop_unique_email', '2025-10-30 21:16:06.564071'),
+(25, 'account', '0005_emailaddress_idx_upper_email', '2025-10-30 21:16:06.621336'),
+(26, 'account', '0006_emailaddress_lower', '2025-10-30 21:16:06.657918'),
+(27, 'account', '0007_emailaddress_idx_email', '2025-10-30 21:16:06.738527'),
+(28, 'account', '0008_emailaddress_unique_primary_email_fixup', '2025-10-30 21:16:06.780659'),
+(29, 'account', '0009_emailaddress_unique_primary_email', '2025-10-30 21:16:06.807893'),
+(30, 'core', '0003_alter_mensaje_telefono_stock', '2025-10-30 21:19:12.768751'),
+(31, 'sites', '0001_initial', '2025-10-30 21:19:22.513575'),
+(32, 'sites', '0002_alter_domain_unique', '2025-10-30 21:19:22.586091'),
+(33, 'socialaccount', '0001_initial', '2025-10-30 21:19:23.276882'),
+(34, 'socialaccount', '0002_token_max_lengths', '2025-10-30 21:19:23.382913'),
+(35, 'socialaccount', '0003_extra_data_default_dict', '2025-10-30 21:19:23.399378'),
+(36, 'socialaccount', '0004_app_provider_id_settings', '2025-10-30 21:19:23.620691'),
+(37, 'socialaccount', '0005_socialtoken_nullable_app', '2025-10-30 21:19:23.858284'),
+(38, 'socialaccount', '0006_alter_socialaccount_extra_data', '2025-10-30 21:19:24.009056'),
+(39, 'core', '0003_descuento_factura_alter_producto_options_and_more', '2025-11-16 20:37:14.297119'),
+(40, 'core', '0004_add_token_recuperacion', '2025-11-23 14:34:42.560957');
 
 -- --------------------------------------------------------
 
@@ -388,7 +561,70 @@ INSERT INTO `django_session` (`session_key`, `session_data`, `expire_date`) VALU
 ('uvv930esdmfrmnbj0cb0jqjwmcnj2rwp', '.eJyrViotLk0sysyPz0xRsjI00IHz8_Jzk4pSlayUXHMz81JzlRAyRfk5QGEoT6kWACldF-k:1uzLPD:E53h-9EnTnm-98h_EVln7zd4loEbiiyGDSggIXiZZ14', '2025-10-02 20:39:03.051934'),
 ('vw1zdf7n08b51jl2egyml0g4h8am5upd', '.eJyrViotLk0sysyPz0xRsjLTgXPz8nOTilKVrJQ8UpNL8osUfBMrE5UQ0kX5OUC5xJTczDylWgBgOxhx:1v2imk:lsDm941bzKqzCZJyP9OUgBeuOoTAcbkhd6tiNcIZuMU', '2025-10-12 04:13:18.368355'),
 ('t23b75r8l8sx27kdev0sa0xb07mwjeiz', '.eJyrViotLk0sysyPz0xRsjLTgXPz8nOTilKVrJQ8UpNL8osUfBMrE5UQ0kX5OUC5xJTczDylWgBgOxhx:1v2jYc:MXWCW4NXdoEuYBNaMzg2kkcIgQihPsMmFiLUd0svk4o', '2025-10-12 05:02:46.499833'),
-('bmlyx7tgsvh1oe85hfmu4xsataiydutl', '.eJyrViotLk0sysyPz0xRsjLTgXPz8nOTilKVrJQ8UpNL8osUfBMrE5UQ0kX5OUC5xJTczDylWgBgOxhx:1v2jhp:fYwfybFs3dzd90YPbSOClV187eb0X6GTNA78f4nI6Ow', '2025-10-12 05:12:17.589126');
+('bmlyx7tgsvh1oe85hfmu4xsataiydutl', '.eJyrViotLk0sysyPz0xRsjLTgXPz8nOTilKVrJQ8UpNL8osUfBMrE5UQ0kX5OUC5xJTczDylWgBgOxhx:1v2jhp:fYwfybFs3dzd90YPbSOClV187eb0X6GTNA78f4nI6Ow', '2025-10-12 05:12:17.589126'),
+('zun3hwtoh7sa4yg1jwahqzs4ndeohlhv', '.eJyrViotLk0sysyPz0xRsjLTgXPz8nOTilKVrJQ8UpNL8osUfBMrE5UQ0kX5OUC5xJTczDylWgBgOxhx:1v30MH:7R6_eqPNjtno5pEfZwkr-rozGEaGIJTlT3q_KrQHnmE', '2025-10-12 22:59:09.416251'),
+('u3ju4q6kbh0c1hfly0lqlgu1w5z8b2ft', '.eJxVkM1ugzAQhF_F2jNC_gFj59a-Qo8hQottwCmxq9hUqqK8e4FwyW01O_Npdx6AxsQl5A6XPLmQvcHsY-huLk_RJjidH_Ca4QQpGo_zkYACMMOJNZKpWnPVlKyinDJRwM89_nrr7mtkjHGc3epd_EZgVDa8pryWmuuqqThnUsHzUsB-QLckd-9eTnjTejTfLmwLnOdNLo8zyt1zrFP58fbG55F6Q02Ypo3jqBVKSCspH6zqK8ZRYN1rIxUaIXhdCWQD4soeBLVWM2HsoJ0ZpNJ2h95cSji6tSY4n1voumvau9vVFgpCC8LrgrTwtRizysMyz38k-TE4S3wgmEhyPabsMZRboIUWLhd4_gOusYWT:1vEa5H:aovgZgbfD5GWxKSH26_kruthvsdiqMoMvX5S5_gi-14', '2025-11-13 21:21:27.160061'),
+('2hny06eu6k2kwma35k0w1md2a8cwt6x1', '.eJyrViotLk0sysyPz0xRsjIz1IHz8_Jzk4pSlayUkjPyk_OVEBJF-TlAUShPqRYAFHYXoA:1vEa9I:wP5gZCWepcU5SncAzvetj6w27_aLz2P6Zlfs575idw0', '2025-11-13 21:25:36.303337'),
+('7x73n27manuo7rzf2zvi9fcicxt2db6z', '.eJyrViotLk0sysyPz0xRsjIz1IHz8_Jzk4pSlayUkjPyk_OVEBJF-TlAUShPqRYAFHYXoA:1vEa9I:wP5gZCWepcU5SncAzvetj6w27_aLz2P6Zlfs575idw0', '2025-11-13 21:25:36.303057'),
+('x1tnf4dt8bxtv0tqf1b97mg3pp8hoz3s', '.eJyrViotLk0sysyPz0xRsjIz1IHz8_Jzk4pSlayUkjPyk_OVEBJF-TlAUShPqRYAFHYXoA:1vEaBD:KVD3-i6fnGlAE7E_b_LvWFwulj4r6-y-EafzRkV1p8A', '2025-11-13 21:27:35.592543'),
+('mr00nnsdb31g7qu69rpfmflbj16avbrj', '.eJyrViotLk0sysyPz0xRsjIz1IHz8_Jzk4pSlayUkjPyk_OVEBJF-TlAUShPqRYAFHYXoA:1vEaBD:KVD3-i6fnGlAE7E_b_LvWFwulj4r6-y-EafzRkV1p8A', '2025-11-13 21:27:35.594798'),
+('r6nsv0at5f5xzoqmbnquh8kd9mk0ho3u', '.eJyrViotLk0sysyPz0xRsjIz0YHz8_Jzk4pSlayUkjPyk_OVEBJF-TlAUShPqRYAFQ8Xow:1vH2w9:RbVp70LbuoajuEVmB3O1L9SIOrYmRJHgsZqoUcX2wbs', '2025-11-20 16:34:13.156126'),
+('e7bx54j72ba3z0l4nlljadfyhclk8q6l', '.eJyrViotLk0sysyPz0xRsjIz04Hz8_Jzk4pSlayUkjPyk_OVEBJF-TlAUShPqRYAFXUXpQ:1vH4LZ:5e5DKPMmqO0Y82Ne9ZutO9F8xMpSo3KFwOgdR8oKLGQ', '2025-11-20 18:04:33.960258'),
+('nm8rn5ygs16m8jkiww08rez1lym7xbyx', '.eJyrViotLk0sysyPz0xRsjIz04Hz8_Jzk4pSlayUkjPyk_OVEBJF-TlA0cSU3Mw8pVoA5R8Wpg:1vH4MT:BNBD1VYZdcU7to2jv_bi3XcNnglLAyrRV2-JDqyTk9A', '2025-11-20 18:05:29.616917'),
+('dsp91zi0v696dnxaz5cnjzhpf6odf0rk', '.eJyrVorPTS0uTkxPLVayUoqOjlGKj88qzs-DicYo6SgY6CgYmeooxCjFxJQamRuYKrikFieXpuaV5CvExMQohbkGOfr5g1gKyUWpiSn5Csn5RUWpySWJuUA1qXogI4B6lWJjlWoB5agjvQ:1vH5xi:syu9Do5U7jxsLliLV7ee9y0h0gbBkIKrazMcM-rSNFg', '2025-11-20 19:48:02.408179'),
+('gpg0n3lgni0fsqyhk2k55qr2qyso5gof', '.eJyrViotLk0sysyPz0xRsjIz04Hz8_Jzk4pSlayUkjPyk_OVEBJF-TlA0cSU3Mw8pVoA5R8Wpg:1vHAno:Sbh26BM1tb4VXmULUHqC17I0NNiBe7xJPR_U4yM7C4E', '2025-11-21 00:58:08.918052'),
+('cwl06yv4sdphmtp26qyxfmck68fkzzih', '.eJyrViotLk0sysyPz0xRsjIz14Hz8_Jzk4pSlayUkjPyk_OVEBJF-TlAUShPqRYAFagXpg:1vHmpr:zXT4OGU1ikWVdRFsOdc_0lfDkQihDn_Qn11iV1SQnVg', '2025-11-22 17:34:47.178425'),
+('tg4nfu8dxchnt12tmbh9xtw4vg70zegt', '.eJyrViotLk0sysyPz0xRsjIz14Hz8_Jzk4pSlayUkjPyk_OVEBJF-TlA0cSU3Mw8pVoA5VAWpw:1vHnLh:Bzs2g4rCwri1hJq30X0HrBU4qU50gynbCeDX8P-6lvw', '2025-11-22 18:07:41.758081'),
+('ont1s8xdqa4013qvm89w1vyjxrm532bu', '.eJyrViotLk0sysyPz0xRsjIz14Hz8_Jzk4pSlayUkjPyk_OVEBJF-TlA0cSU3Mw8pVoA5VAWpw:1vHnMB:T7YTrWbgMfpNRHgpH7sD9TMzLiASElrQRxJ7g1pX7hg', '2025-11-22 18:08:11.742758'),
+('modai62uxto1np4ouwwhq9vnkj6e19hu', '.eJyrViotLk0sysyPz0xRsjIz14Hz8_Jzk4pSlayUkjPyk_OVEBJF-TlA0cSU3Mw8pVoA5VAWpw:1vHo4M:Rbv4albXsoJFlUzbIzFTHddqROqFhc8UAm4uO9d5vCQ', '2025-11-22 18:53:50.535275'),
+('ngkaxx5nhdnok9fauet3uzexua3a93y4', '.eJyrViotLk0sysyPz0xRsjIz14Hz8_Jzk4pSlayUkjPyk_OVEBJF-TlA0cSU3Mw8pVoA5VAWpw:1vHoID:ivO1vLQU4sjUyCmSE2o8jdgj2B1E4dApjpe1k0p-yhg', '2025-11-22 19:08:09.279249'),
+('zxr7jjcmp2q98j6vqxwxmb76xorswzm6', '.eJyrViotLk0sysyPz0xRsjIz14Hz8_Jzk4pSlayUkjPyk_OVEBJF-TlA0cSU3Mw8pVoA5VAWpw:1vHobb:_1EoJ5aIMcebiGnpZ0uVtrRWKgTRHLF-ZFqDmvWrjow', '2025-11-22 19:28:11.944371'),
+('rhztfda0173g606qi1glzkngd0jgl1g1', '.eJyrViotLk0sysyPz0xRsjIz14Hz8_Jzk4pSlayUkjPyk_OVEBJF-TlA0cSU3Mw8pVoA5VAWpw:1vHodO:5_BE0HA1KlP6DNC1d4IIP8P28DJ9scBGHUS1VFHczKg', '2025-11-22 19:30:02.985242'),
+('r1ws6gztwvc5vmh8wqukakjrztsvg4iv', '.eJyrViotLk0sysyPz0xRsjIz14Hz8_Jzk4pSlayUkjPyk_OVEBJF-TlA0cSU3Mw8pVoA5VAWpw:1vHrXn:lWndrNoZprnFZtJ9VIyJ8RZ4ou7ENlplBzBHHLXeuyI', '2025-11-22 22:36:27.546673'),
+('24xca0mqp393tbvg7jjww085nuunvmur', '.eJyrViotLk0sysyPz0xRsjIz14Hz8_Jzk4pSlayUkjPyk_OVEBJF-TlA0cSU3Mw8pVoA5VAWpw:1vHrYd:3L1ggUG03wnl_1ZNoYTpxHqpwVuPlSmc2nOU4SAsCjk', '2025-11-22 22:37:19.980781'),
+('73s6u5zjr9i05988k2537l2gkpqm2dvl', '.eJyrViotLk0sysyPz0xRsjIz14Hz8_Jzk4pSlayUkjPyk_OVEBJF-TlA0cSU3Mw8pVoA5VAWpw:1vHsAw:TPJjFIt08rwZnYtX1A_WyO5J_n5XtuVDkdviz4HhplE', '2025-11-22 23:16:54.540121'),
+('v0o9nplcin4pkshg3utwmor44lrnxv26', '.eJyrViotLk0sysyPz0xRsjIz14Hz8_Jzk4pSlayUkjPyk_OVEBJF-TlA0cSU3Mw8pVoA5VAWpw:1vKKpN:zEG3rY6bKFMFC5GSlEH41dwmq0s8IQBAQVc2NTEnzpo', '2025-11-29 18:16:49.057465'),
+('hehbbh94sxorx7paaxfof2ldpjvhwqx1', '.eJyrViotLk0sysyPz0xRsjIz14Hz8_Jzk4pSlayUkjPyk_OVEBJF-TlA0cSU3Mw8pVoA5VAWpw:1vKPWU:EA5hPbeHrdzrUsE7dKIKfNoVMWYKFOSJfoTedy6I3AU', '2025-11-29 23:17:38.411244'),
+('mcil1vgr2xqtrdc69nhcprnt7wc7nstz', '.eJyrViotLk0sysyPz0xRsjIz14Hz8_Jzk4pSlayUkjPyk_OVEBJF-TlA0cSU3Mw8pVoA5VAWpw:1vKPJ5:Rw_ZOAFmeCVYWlt_BhCa1GyV54rEtLzRv8XZ8AeMQsI', '2025-11-29 23:03:47.213741'),
+('jkm9bgj4xv285olnkwxhqgkqlwfmz96b', '.eJw1jMEGgEAURX_lueuRxIh20R_MspcxpieihnnNKv17JXE297jOCb-JalhE0WEcGd6vmvbfMgzVhhpriMFcmra2NIjGIvuRiJnROze4_uPdFLOEOVFMOUs8wvY8pXpDTwHThOsGtEYlYQ:1vKPPz:EomTBLvwBGKcw-NNTQkmlB5x_bCJB-3NkusAH23gu0Q', '2025-11-29 23:10:55.288203'),
+('u89txthjar6dz8buam7mvqmtxlcxy9br', '.eJyrViotLk0sysyPz0xRsjIz14Hz8_Jzk4pSlayUkjPyk_OVEBJF-TlA0cSU3Mw8pVoA5VAWpw:1vKQvO:XKBouKQqMUaTLVIR9gF7nzZt3cmi9ynyzlFYvCId9Sg', '2025-11-30 00:47:26.851550'),
+('6xzy5ykhejvns14hnyulge1nxv5g8qp2', '.eJyrViotLk0sysyPz0xRsjIz14Hz8_Jzk4pSlayUkjPyk_OVEBJF-TlA0cSU3Mw8pVoA5VAWpw:1vKQvO:XKBouKQqMUaTLVIR9gF7nzZt3cmi9ynyzlFYvCId9Sg', '2025-11-30 00:47:26.875433'),
+('ekczsvd29gl3nz3dqz8tky24vif89xig', '.eJyrViotLk0sysyPz0xRsjIz14Hz8_Jzk4pSlayUkjPyk_OVEBJF-TlA0cSU3Mw8pVoA5VAWpw:1vKRCc:3Bny2ycdJEXUWcMmk1FXmPI4iYwrDbvz4qh2JB9Kblo', '2025-11-30 01:05:14.169752'),
+('f4xhpz1wqvwdqyebnoivt5ib71eaeplg', '.eJyrViotLk0sysyPz0xRsjIz14Hz8_Jzk4pSlayUkjPyk_OVEBJF-TlA0cSU3Mw8pVoA5VAWpw:1vKfB3:_z3tA2OWFFhUB_tjb1GVUzhbrvPUNwfWU6v8tfZSPFk', '2025-11-30 16:00:33.824671'),
+('tbhcu35gds56myn4ulg9rq0zede7ou3p', '.eJyrViotLk0sysyPz0xRsjIz14Hz8_Jzk4pSlayUkjPyk_OVEBJF-TlA0cSU3Mw8pVoA5VAWpw:1vKfB3:_z3tA2OWFFhUB_tjb1GVUzhbrvPUNwfWU6v8tfZSPFk', '2025-11-30 16:00:33.835166'),
+('is9h3xx5pzjpmt9mbc39r71nhxk4c5aj', '.eJyrViotLk0sysyPz0xRsjIz14Hz8_Jzk4pSlayUkjPyk_OVEBJF-TlA0cSU3Mw8pVoA5VAWpw:1vKgSJ:9_Q8XHap2aqN-MJtmTWSUkb8sBY4OwtRGkJ5i8qzzI0', '2025-11-30 17:22:27.364495'),
+('bbwvt19vy5k32b0s89pn9n8ay6ez1vvc', '.eJyrViotLk0sysyPz0xRsjIz14Hz8_Jzk4pSlayUkjPyk_OVEBJF-TlA0cSU3Mw8pVoA5VAWpw:1vL4jb:6HOzKpEkL3oV0XFkIB7mm_km88li4A7-8FksoPWx0hw', '2025-12-01 19:17:55.324894'),
+('hs7pcr4t7p67fzpbiy7rcbqgb473an4l', '.eJw1jDEKhTAQBa_y3DpF_GDjVVwJiy4aUQNuAoJ4d7X47QwzF4VNzWRSo5a6jimExdL-p0wO3uHXODAxF--lXsoak0MuGIruWTALLI4Jw6EyCvSMOZlsr9PqG7wl9T3dD8lHI_8:1vL6cK:0nW7VXU5DA4gk8D0YxZG87KTW0knHJCcieb6xOihzJE', '2025-12-01 21:18:32.675171'),
+('yz31cji7sdxd237d886s60kjoggmi61y', '.eJyrViotLk0sysyPz0xRsjI30YHz8_Jzk4pSlayUskpzMvOVEBJF-TlAUShPqRYAF_MXuw:1vL6lx:3Mn7rp9gW2uXzq51t9l_DLlbcD8IQNryyTylJ92YGJM', '2025-12-01 21:28:29.867509'),
+('91cig01tggo0fp9rsytgd9rx082o3tnx', '.eJwlyUEKwyAQAMC_7FmKiaYN3vKA9l5KkGWzDbaiQU0PEf_eQuc6FXIkhx6J4h6KzQULZzAVcuDjPq6yvG7XCeUE5lFhS5E4_x58XF0AAQsWBBN27wVsb2JLcWH74eSejtN_muguZzWqTg_DSepeatXPrX0Bvw4pxg:1vMr8R:Ilro0WmqdrfZ1OGEYcZFClsSJMQe6NPYYSt0Yq3ok14', '2025-12-06 17:10:55.067071'),
+('buupinhaqmzubtg271y3kr8icazzqaqo', '.eJylzUELgjAYgOH_8p2HqFNzHsuKgjqVUSEy5lcsxybbrIP43xP6CV3f5_CO4IyQXHEhzKB94zz36KAYob-u9Ge_xGorN6fufITiPkdrBLrZQZmn1ECg5Z5DoQelCPSdwEaYFps3WvmQaH8ykWiR0ZymNGdBHoY0CeOaAFW3ZN2V5Qt39nLg1f-HNIqSNGAsYyyup-kLm7FI1w:1vMwG2:IPkVh3uYHgQz_jrRB43GS7IyX0UwN1CIK9g5GtRczww', '2025-12-06 22:39:06.031412'),
+('gl5p21xpb6x4lyg7omuvs3y49ke0fz6p', '.eJx1UU2v2yAQ_CuIs2Vh8Gdu7a3nd4wjaw1rh1cbIj6e9BrlvxeStK859IAEM7Mzu-yVeis1bCCljSZMPkBATw_XW0H_YBDDGU3QEoK2ZtoxnK1KmuOVPu708OpCU22gh6prRV8PFevLiomu7gp6cfZDK3SpYrV23TBJo84GFWs73jDetAMf6q7mvGp7ejsV9J4_RY9ueijpCzaD_IkmE7BtGS6fXZR3zZP25beXKb4_q16szuDP2QeZEr1oVcv4ovq5rjgIaOZBtj1IIXhTC6gWgOS9CKbUUAmplgHl0vaDyqbRR3Da3hvu-dfb2H12mP8LZ_BBgyESnNPbZskag0bn8Nc_9c5uSfx85WZ39B7WvCF6PI50mt79fSV3dKQFYQUR6Yz0x36xLoAJeEgZ-6yBhEikNcGBx3GMjC0VEIVeIcG0d-JRSv0ghCEXcEB2-LQuEWt0WoEqc8JIR3oqyP_SeZMlb1HKBC9x2z6J16tBRbQh4Mnfyb_MTvT2G8jw2X4:1vMvjA:ZUtJv6sDx3g-d_LeQZi-O8brq256QUPstWUoCy1jVpQ', '2025-12-06 22:05:08.357565'),
+('qiwk12tzh2zqtnl39bjnn1dg4p2wsosa', '.eJx1UU2v2yAQ_CuIs2UZsB07t_bW8zvGkbWGtcOrDREfT3qN8t8LTtrXHHpAgpnZ2Vn2Rr2VGlaQ0kYTRh8goKfH272gfzCI4YImaAlBWzNuGC5WJc3pRh93enx1oak20CM7tKJr2KFjJeNdL-q6oFdnP7RCl0oWa5cVkzbq7MCq9sCbijdtz_v6UHPO2o7ezwXdA4zRoxsfSvqCTSB_oskErGuGy2eMctc8aV9-exnj-7PqxeoC_pJ9sFKiE61qKz6rbqoZBwHN1Mu2AykEb2oBbAZI3rOolOqZkGruUc5t16tsGn0Ep-0euBNfb2O3yWH-MJzABw2GSHBOr6slSwwancNf_9Q7uybx85XDbug9LHlF9HQa6Di--30nOzrQglQFEekM9Md2tS6ACXhMPbZJAwmRSGuCA4_DEKtqZkAUeoUE0-KJRyn1gxCGXMEB2eDTukQs0WkFqswdBjrQc0H-1503WfIWpUzwHNf1k3i9GFREGwKe_J38y-xM778BaGfZuA:1vMwQH:6fGpDm7-KZ5DTZP0wzIq4AVCgypfB6mk2-CghLoZ5Zs', '2025-12-06 22:49:41.341403'),
+('z4x5mjes875kbxzu9r5pzwhqusee2aj3', '.eJxVkM1uhSAQhV_lhvWNEVAEd-1rNI0ZYVRSrjT8dFHju1e9Nq075sw5X86wkOi1BQda-zynLiZIGEm7rHfyq0FOE87JakjWz90D0-TN5nlbyPNN2iuFbNlEWtoILmtWibJQlDIp-Z18Bv9lDYYtMno_Oty82e4EWoqG1SWrhWKqairGqJBkfb-To0CXI4bu6SQXrQf9gfO-AOd2uThrFIfnXMfi5XLG65m6oCaI087B0nDJhRElG4zsK8qAQ90rLSRozlldcaADwMYeeGmMolybQaEehFRmh-aYIVh_FJbV3zz7Rx9w_zDsISYL801DCNY5fxtzshgCfv_LB-828zmR9QdopZF6:1vMwbF:KNTlqpdV2XYj0NiN8VyblosRALyKlk_d5J9xOLJe52o', '2025-12-06 23:01:01.219318'),
+('o6bh50hpta5scdy6vphy4r7mzkagix8r', '.eJyrViotLk0sysyPz0xRsjIz14Hz8_Jzk4pSlayUkjPyk_OVEBJF-TlA0cSU3Mw8pVoA5VAWpw:1vNChP:X9mszANQOvS0YECzC9-uZwXInlzv1471IyyqpofcOjw', '2025-12-07 16:12:27.239788'),
+('psgh8c615frbwa7lt035qkg3u5h7pc8u', '.eJyrViotLk0sysyPz0xRsjIz14Hz8_Jzk4pSlayUkjPyk_OVEBJF-TlA0cSU3Mw8pVoA5VAWpw:1vNDAM:eAixuRydqU_ocO6iRLYO2i2ek6mzCSRu2w4gpQspanQ', '2025-12-07 16:42:22.487580'),
+('a13jj6hw3usizni7ul8olbb3zjb0z1vp', '.eJyrViotLk0sysyPz0xRsjIz14Hz8_Jzk4pSlayUkjPyk_OVEBJF-TlA0cSU3Mw8pVoA5VAWpw:1vNDHf:P449aasEbwigpdMMv8p4ZO62D-TisGmaXOugFcF0Vuc', '2025-12-07 16:49:55.032853'),
+('26re9wnwx1l8sdp0alhhazfs4vztj2wx', '.eJyrViotLk0sysyPz0xRsjIz14Hz8_Jzk4pSlayUkjPyk_OVEBJF-TlA0cSU3Mw8pVoA5VAWpw:1vNDKT:wUzJ7eFOxTWbhWE64AkUY2oZ7I6fAXTv9HSWsCtEQCg', '2025-12-07 16:52:49.515048'),
+('s7fitb5twofwgh12f1z6si4j42qcwha8', 'eyJzb2NpYWxhY2NvdW50X3N0YXRlcyI6eyJZNFVOS0hRd0JMcVk0MjlVIjpbeyJwcm9jZXNzIjoibG9naW4iLCJkYXRhIjpudWxsLCJwa2NlX2NvZGVfdmVyaWZpZXIiOm51bGx9LDE3NjM5MjExODMuODI0NTkxOV19fQ:1vNETf:E5ZS4S4LUlEIjeVCJ-58z9PBhUSPOeIWkOH0x02Eyw4', '2025-12-07 18:06:23.862013');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `django_site`
+--
+
+CREATE TABLE `django_site` (
+  `id` int NOT NULL,
+  `domain` varchar(100) NOT NULL,
+  `name` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `django_site`
+--
+
+INSERT INTO `django_site` (`id`, `domain`, `name`) VALUES
+(1, 'example.com', 'example.com');
 
 -- --------------------------------------------------------
 
@@ -475,10 +711,7 @@ INSERT INTO `imagenproducto` (`id`, `imagen`, `producto_id`) VALUES
 (94, 'productos/12g.png', 35),
 (105, 'productos/14a_gCU5wtX.jpg', 37),
 (106, 'productos/14b_dsUvIgY.jpg', 37),
-(107, 'productos/14c_x6STJjo.jpg', 37),
-(108, 'productos/13a.avif', 38),
-(109, 'productos/13b.avif', 38),
-(110, 'productos/13c.avif', 38);
+(107, 'productos/14c_x6STJjo.jpg', 37);
 
 -- --------------------------------------------------------
 
@@ -533,7 +766,10 @@ INSERT INTO `pedidos` (`id`, `usuario_id`, `productos`, `estado`, `fecha`, `valo
 (26, 32, '[{\"imagen\": \"/media/productos/3a_xKqehRx.jpg\", \"nombre\": \"Pantalón Flare\", \"precio\": 200000, \"cantidad\": 1}, {\"imagen\": \"/media/productos/2a_LHPwCvx.jpg\", \"nombre\": \"Chaqueta Volantes\", \"precio\": 80000, \"cantidad\": 1}, {\"imagen\": \"/media/productos/4a_DKRQj89.jpg\", \"nombre\": \"Vestido Mini  Satinado\", \"precio\": 150000, \"cantidad\": 1}]', 'Pendiente', '2025-09-16 04:39:21', NULL),
 (33, 59, '[{\"imagen\": \"/media/productos/7a.jpg\", \"nombre\": \"Polo Bordado Print\", \"precio\": 149900, \"cantidad\": 1}, {\"imagen\": \"/media/productos/61.jpg\", \"nombre\": \"Saco Cremallera Cuello\", \"precio\": 110000, \"cantidad\": 1}, {\"imagen\": \"/media/productos/5a_3xPefn0.jpg\", \"nombre\": \"Bolso Shopper\", \"precio\": 190000, \"cantidad\": 1}]', 'Pendiente', '2025-09-16 16:36:19', NULL),
 (34, 10, '[{\"imagen\": \"/media/productos/61.jpg\", \"nombre\": \"Saco Cremallera Cuello\", \"precio\": 110000, \"cantidad\": 1}]', 'Entregado', '2025-09-19 01:39:53', NULL),
-(35, 7, '[{\"imagen\": \"/media/productos/9a.jpg\", \"nombre\": \"Falda Mini Lentejuelas\", \"precio\": 199900, \"cantidad\": 21}]', 'Entregado', '2025-09-19 07:12:22', NULL);
+(35, 7, '[{\"imagen\": \"/media/productos/9a.jpg\", \"nombre\": \"Falda Mini Lentejuelas\", \"precio\": 199900, \"cantidad\": 21}]', 'Entregado', '2025-09-19 07:12:22', NULL),
+(39, 6, '[{\"imagen\": \"/media/productos/2a_LHPwCvx.jpg\", \"nombre\": \"Chaqueta Volantes\", \"precio\": \"80000.0\", \"cantidad\": 1}, {\"imagen\": \"/media/productos/3a_xKqehRx.jpg\", \"nombre\": \"Pantalón Flare\", \"precio\": \"200000.0\", \"cantidad\": 1}, {\"imagen\": \"/media/productos/4a_DKRQj89.jpg\", \"nombre\": \"Vestido Mini  Satinado\", \"precio\": \"150000.0\", \"cantidad\": 1}]', 'Pendiente', '2025-09-29 04:24:06', NULL),
+(41, 6, '[{\"stock\": 5, \"imagen\": \"/media/productos/1a_C5CeaM8.jpg\", \"nombre\": \"Abrigo Largo\", \"precio\": 699000, \"cantidad\": 5, \"productId\": 22}]', 'Pendiente', '2025-09-29 05:12:47', NULL),
+(42, 61, '[{\"color\": \"Crudo\", \"stock\": 10, \"talla\": \"XS\", \"imagen\": \"/media/productos/2a_LHPwCvx.jpg\", \"nombre\": \"Chaqueta Volantes\", \"precio\": 80000, \"cantidad\": 1, \"productId\": 24}]', 'Pendiente', '2025-10-31 02:25:01', NULL);
 
 -- --------------------------------------------------------
 
@@ -547,34 +783,33 @@ CREATE TABLE `productos` (
   `nombre_producto` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `descripcion_producto` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
   `valor_producto` float(10,2) DEFAULT NULL,
-  `cantidad_producto` int DEFAULT NULL,
-  `categoria_producto` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `imagen_producto` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `tallas_disponibles` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `colores_disponibles` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `marca_id` int DEFAULT NULL,
-  `proveedor_id` int DEFAULT NULL
+  `proveedor_id` int DEFAULT NULL,
+  `descuento_id` int DEFAULT NULL,
+  `categoria_id` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `productos`
 --
 
-INSERT INTO `productos` (`id`, `codigo_producto`, `nombre_producto`, `descripcion_producto`, `valor_producto`, `cantidad_producto`, `categoria_producto`, `imagen_producto`, `tallas_disponibles`, `colores_disponibles`, `marca_id`, `proveedor_id`) VALUES
-(22, '01001', 'Abrigo Largo', 'Abrigo confeccionado con lana. \r\nCuello solapa y manga larga. Bolsillos delanteros de vivo. \r\nBajo con abertura en espalda. Cierre con cinturón del mismo tejido.\r\n\r\nEXTERIOR\r\n50% lana\r\n30% poliéster\r\n10% acrílico\r\n5% otras fibras\r\n5% poliamida\r\n\r\nFORRO\r\n100% acetato\r\nQue contiene al menos:\r\n\r\nEXTERIOR\r\n5% poliamida reciclada certificada RCS\r\n50% lana reciclada certificada RCS\r\n30% poliéster reciclado certificado RCS\r\n10% acrílico reciclado certificado RCS\r\n\r\nMATERIALES CERTIFICADOS\r\nPOLIAMIDA RECICLADA CERTIFICADA RCS\r\nEsta fibra se fabrica a partir de residuos de poliamida y otros productos de desecho, como las redes de pesca. Transformar los residuos en nuevos materiales ayuda a limitar la extracción de materias primas. Está certificada conforme al Recycled Claim Standard  (RCS), que verifica el contenido reciclado y hace un seguimiento desde el origen hasta el producto final.\r\nCertificado por Intertek 193341\r\n\r\nLANA RECICLADA CERTIFICADA RCS\r\nEste material se fabrica a partir de residuos textiles reciclados y prendas usadas. Transformar los residuos en nuevos materiales ayuda a limitar la extracción de materias primas. Cuenta con la certificación Recycled Claim Standard (RCS), que verifica el contenido reciclado y hace un seguimiento desde el origen hasta el producto final.\r\nCertificado por Intertek 193341\r\n\r\nPOLIÉSTER RECICLADO CERTIFICADO RCS\r\nActualmente, el poliéster reciclado se fabrica principalmente a partir de residuos de plástico PET. Se trata de un tipo de plástico muy utilizado en diversos artículos, como las botellas de plástico. El uso de materiales reciclados ayuda a limitar la producción de fibra de poliéster virgen. Está certificado según el Recycled Claim Standard  (RCS), que verifica el contenido reciclado y hace un seguimiento desde el origen hasta el producto final.\r\nCertificado por Intertek 193341\r\n\r\nACRÍLICO RECICLADO CERTIFICADO RCS\r\nEste material se fabrica a partir de residuos acrílicos reciclados procedentes de otros procesos de producción. Transformar los residuos en nuevos materiales ayuda a limitar la extracción de materias primas. Cuenta con la certificación Recycled Claim Standard (RCS), que verifica el contenido reciclado y hace un seguimiento desde el origen hasta el producto final.\r\nCertificado por Intertek 193341\r\n\r\nCUIDADOS\r\nCuidar de tus prendas es cuidar del medioambiente.\r\nPara mantener limpias tus chaquetas y abrigos sólo tienes que ventilarlas y pasarles un paño o un cepillo para la ropa. Si la limpieza en seco es necesaria intenta buscar tintorerías que utilicen tecnologías respetuosas con el medioambiente. \r\n\r\nGuía para el cuidado de la ropa\r\nNo lavar\r\nNo usar lejía / blanqueador\r\nPlanchar máximo 110ºC \r\nLim.Seco tetracloroetileno\r\nNo usar secadora', 699000.00, 79, 'abrigos', '', 'S,M,L,XL', 'Gris,Café,Negro', 3, 1),
-(24, '02002', 'Chaqueta Volantes', 'Chaqueta de escote pico y manga larga. Detalle de volantes a tono. Cierre frontal con botones.\r\n\r\nTEJIDO PRINCIPAL\r\n 99% algodón,\r\n  1% elastano.\r\n                    \r\nADORNOS\r\n 56% poliéster,\r\n 44% algodón.\r\n\r\nCUIDADOS\r\nCuidar de tus prendas es cuidar del medioambiente.\r\nPara mantener limpias tus chaquetas y abrigos sólo tienes que ventilarlas y pasarles un paño o un cepillo para la ropa. Este proceso es más delicado con los tejidos y además evita el consumo de agua y energía de los procesos de lavado. \r\n\r\nGuía para el cuidado de la ropa\r\n\r\nLavar a máquina max. 30ºC. Centrifugado corto\r\nNo usar lejía / blanqueador\r\nPlanchar máximo 150 º C\r\nLim.Seco tetracloroetileno\r\nSe puede usar secadora temperatura reducida', 80000.00, 78, 'chaquetas', '', 'XS,   S,   M,    L,  XL', 'Crudo', 2, 1),
-(25, '03003', 'Pantalón Flare', 'Pantalón de tiro alto confeccionado en tejido de punto elástico y flexible con trama compacta, mullida y opaca. Cintura elástica ajustable con cordones. Detalle de costura marcada en delantero. Bajo acabado flare.\r\n                 \r\nEXTERIOR\r\n75% algodón\r\n17% poliéster\r\n8% elastano\r\n\r\nCUIDADOS\r\nCuidar de tus prendas es cuidar del medioambiente\r\nLos lavados a bajas temperaturas y los programas de centrifugado suaves son más delicados con las prendas, ayudando a mantener el color, la forma y la estructura del tejido. Al mismo tiempo, reduce el consumo de energía que se utiliza en los procesos de cuidado. \r\n\r\nGuía para el cuidado de la ropa\r\n\r\nLavar a máquina max. 30ºC. Centrifugado corto\r\nNo usar lejía / blanqueador\r\nPlanchar máximo 110ºC \r\nNo limpieza en seco\r\nNo usar secadora', 200000.00, 65, 'pantalones', '', 'XS,   S,   M,    L,  XL', 'Negro, Crudo, Azul medio, Marron', 2, 3),
-(26, '04004', 'Vestido Mini  Satinado', 'Vestido de escote redondo y tirantes anchos. Detalle de abertura en espalda. Cierre lateral con\r\n cremallera oculta en costura\r\n\r\nEXTERIOR\r\n97% poliéster\r\n3% elastano\r\nQue contiene al menos:\r\n\r\nEXTERIOR\r\n97% poliéster reciclado certificado RCS\r\n\r\nMATERIALES CERTIFICADOS\r\nPOLIÉSTER RECICLADO CERTIFICADO RCS\r\nActualmente, el poliéster reciclado se fabrica principalmente a partir de residuos de plástico PET. Se trata de un tipo de plástico muy utilizado en diversos artículos, como las botellas de plástico. El uso de materiales reciclados ayuda a limitar la producción de fibra de poliéster virgen. Está certificado según el Recycled Claim Standard  (RCS), que verifica el contenido reciclado y hace un seguimiento desde el origen hasta el producto final.\r\n\r\nCertificado por Intertek 193341', 150000.00, 150, 'vestidos', '', 'XS,   S,   M,    L', 'Rojo', 2, 1),
-(27, '05005', 'Bolso Shopper', 'Bolso formato shopper, Asa de hombro, Detalle de colgador, Bolsillo interior maxi y Cierre mediante imán.\r\n\r\nAlto x Ancho x Fondo: 29,5 x 36,5 x 12.\r\n\r\nEXTERIOR\r\n100% poliuretano\r\n\r\n FORRO\r\n 65% poliéster,\r\n 35% algodón.\r\n\r\nCUIDADOS\r\nCuidar de tus prendas es cuidar del medioambiente.\r\nAcciones simples como limpiar los artículos con un paño de algodón seco o un cepillo suave, según las características del producto, pueden ayudarnos a cuidarlos. Siempre que sea posible, intenta usar productos respetuosos con el medioambiente. \r\n\r\nGuía para el cuidado de la ropa\r\n\r\nNo lavar\r\nNo usar lejía / blanqueador\r\nNo planchar\r\nNo limpieza en seco\r\nNo usar secadora', 190000.00, 250, 'bolsos', '', 'Unica', 'Negro,  Cafe', 2, 1),
-(28, '06006', 'Saco Cremallera Cuello', 'Saco de cuello subido con cierre frontal de cremallera, Manga larga y Acabados en rib.\r\n\r\nEXTERIOR\r\nTEJIDO PRINCIPAL\r\n78% algodón\r\n22% poliéster\r\n\r\nTEJIDO SECUNDARIO\r\n100% algodón\r\nQue contiene al menos:\r\nEXTERIOR\r\nTEJIDO PRINCIPAL\r\n78% algodón de cultivo orgánico certificado OCS\r\n22% poliéster reciclado certificado RCS\r\n\r\nTEJIDO SECUNDARIO\r\n100% algodón de cultivo orgánico certificado OCS\r\n\r\nMATERIALES CERTIFICADOS\r\nPOLIÉSTER RECICLADO CERTIFICADO RCS\r\nActualmente, el poliéster reciclado se fabrica principalmente a partir de residuos de plástico PET. Se trata de un tipo de plástico muy utilizado en diversos artículos, como las botellas de plástico. El uso de materiales reciclados ayuda a limitar la producción de fibra de poliéster virgen. Está certificado según el Recycled Claim Standard  (RCS), que verifica el contenido reciclado y hace un seguimiento desde el origen hasta el producto final.\r\nCertificado por Intertek 193341\r\n\r\nALGODÓN DE CULTIVO ORGÁNICO CERTIFICADO OCS\r\nEsta fibra se produce sin utilizar fertilizantes ni pesticidas artificiales y se cultiva a partir de semillas que no han sido modificadas genéticamente. Actualmente trabajamos con el Organic Content Standard (OCS) que supervisa el proceso desde el origen hasta el producto final.\r\nCertificado por Intertek 193341\r\n\r\nCUIDADOS\r\nCuidar de tus prendas es cuidar del medioambiente\r\nLos lavados a bajas temperaturas y los programas de centrifugado suaves son más delicados con las prendas, ayudando a mantener el color, la forma y la estructura del tejido. Al mismo tiempo, reduce el consumo de energía que se utiliza en los procesos de cuidado. \r\n\r\nGuía para el cuidado de la ropa\r\n\r\nLavar a máquina max. 30ºC. Centrifugado corto\r\nNo usar lejía / blanqueador\r\nPlanchar máximo 110ºC \r\nNo limpieza en seco\r\nNo usar secadora', 110000.00, 100, 'sacos', '', 'XS,   S,   M,    L,  XL, XXL', 'Negro,  Blanco roto,  Gris,  Marron', 2, 1),
-(29, '07007', 'Polo Bordado Print', 'Camiseta tipo polo con estampado \"class of 65-scholl Henitage\"\r\n\r\nEXTERIOR\r\n100% algodón\r\nQue contiene al menos:\r\n\r\nEXTERIOR\r\n20% ALGODÓN RECICLADO CERTIFICADO RCS\r\nMATERIALES CERTIFICADOS\r\nALGODÓN RECICLADO CERTIFICADO RCS\r\nEsta fibra se fabrica a partir de residuos textiles de algodón reciclado. El uso de materiales reciclados ayuda a limitar el consumo de materias primas. Está certificada conforme al Recycled Claim Standard (RCS), que verifica el contenido reciclado y hace un seguimiento desde el origen hasta el producto final.\r\n\r\nCertificado por Intertek 193341.\r\n\r\nCUIDADOS\r\nCuidar de tus prendas es una manera de alargar su vida útil. Sigue las instrucciones de cuidado y lava tus prendas solo cuando sea necesario. Reduciendo los lavados y los secados alargamos la vida de nuestras prendas y reducimos el consumo de agua y energía.\r\n\r\nLAVAR A MAQUINA MAX. 30ºC. CENTRIFUGADO CORTO\r\nNO USAR LEJÍA / BLANQUEADOR\r\nPLANCHAR MAXIMO 110 º C \r\nNO LIMPIEZA EN SECO\r\nNO USAR SECADORA\r\nLAVAR AL REVÉS\r\nPLANCHAR AL REVES', 149900.00, 120, 'camisetas', '', 'XS,   S,   M,    L,  XL', 'Azul Oscuro', 2, 1),
-(30, '08008', 'Pantalón Baggy Cargo', 'Pantalon tipo cargo oversize\r\n\r\nEXTERIOR\r\n100% algodón\r\n\r\nQue contiene al menos:\r\n\r\nEXTERIOR\r\n25% ALGODÓN RECICLADO CERTIFICADO RCS\r\n25% ALGODÓN DE CULTIVO ORGÁNICO CERTIFICADO OCS\r\nMATERIALES CERTIFICADOS\r\nALGODÓN RECICLADO CERTIFICADO RCS\r\nEsta fibra se fabrica a partir de residuos textiles de algodón reciclado. El uso de materiales reciclados ayuda a limitar el consumo de materias primas. Está certificada conforme al Recycled Claim Standard (RCS), que verifica el contenido reciclado y hace un seguimiento desde el origen hasta el producto final.\r\n\r\nCertificado por Intertek 193341.\r\n\r\nALGODÓN DE CULTIVO ORGÁNICO CERTIFICADO OCS\r\nEsta fibra se produce sin utilizar fertilizantes ni pesticidas artificiales y se cultiva a partir de semillas que no han sido modificadas genéticamente. Actualmente trabajamos con el Organic Content Standard (OCS) que supervisa el proceso desde el origen hasta el producto final.\r\n\r\nCertificado por Intertek 193341.\r\n\r\nCUIDADOS\r\nCuidar de tus prendas es una manera de alargar su vida útil. Sigue las instrucciones de cuidado y lava tus prendas solo cuando sea necesario. Reduciendo los lavados y los secados alargamos la vida de nuestras prendas y reducimos el consumo de agua y energía.\r\n\r\nLAVAR A MAQUINA MAX. 40ºC CENTRIFUGADO CORTO\r\nNO USAR LEJÍA / BLANQUEADOR\r\nPLANCHAR MAXIMO 150 º C\r\nSE PUEDE USAR SECADORA TEMPERATURA REDUCIDA\r\nLAVAR POR SEPARADO\r\nLIMPIEZA EN SECO TETRACLOROETILENO', 190000.00, 67, 'pantalones', '', '34,   36,  38,  40,   42,  44', 'Negro,  Gris,   Marron', 2, 1),
-(31, '09009', 'Falda Mini Lentejuelas', 'Falda mini de tiro medio. Detalle aplicación lentejuelas. Forro interior combinado. Cierre lateral con cremallera oculta en costura.', 199900.00, 55, 'faldas', '', 'XS, S, M, L, XL', 'Plata', 2, 1),
-(32, '0100010', 'Jeans  Wide Tiro Alto', 'Jeans de tiro alto con cinco bolsillos. Efecto lavado. Pernera ancha. Cierre frontal con cremallera y botón.\r\n\r\nCOMPOSICIÓN\r\n\r\nEXTERIOR\r\n100% algodón\r\n\r\nALGODÓN DE CULTIVO ORGÁNICO CERTIFICADO OCS\r\nEsta fibra se produce sin utilizar fertilizantes ni pesticidas artificiales y se cultiva a partir de semillas que no han sido modificadas genéticamente. Actualmente trabajamos con el Organic Content Standard (OCS) que supervisa el proceso desde el origen hasta el producto final.\r\n\r\nCUIDADOS\r\nCuidar de tus prendas es cuidar del medioambiente\r\nLos lavados a bajas temperaturas y los programas de centrifugado suaves son más delicados con las prendas, ayudando a mantener el color, la forma y la estructura del tejido. Al mismo tiempo, reduce el consumo de energía que se utiliza en los procesos de cuidado. \r\n\r\nGuía para el cuidado de la ropa\r\n\r\nLavar a máquina max. 40ºC centrifugado corto\r\nNo usar lejía / blanqueador\r\nPlanchar máximo 200 º C\r\nNo limpieza en seco\r\nSe puede usar secadora temperatura reducida', 150000.00, 45, 'jeans', '', 'XS,   S,   M,    L,  XL', 'Azul medio', 3, 1),
-(34, '0110011', 'Collar Estrella Polar', 'Ilumina tu look con nuestro Collar Estrella Polar en plata de primera ley. Este collar presenta el simbólico diseño de la estrella polar con brillantes circonitas cúbicas transparentes colgando de una cadena de cable y aportará un brillo celestial a tu look con un simbolismo significativo. \r\nLa cadena se puede ajustar a tres longitudes diferentes para adaptarla a tu estilo. \r\n\r\nLa Estrella Polar, que sirve de brújula en momentos de incertidumbre, nos guía hacia un futuro más brillante y representa nuestras esperanzas y anhelos. Póntelos para dar brillo a cualquier look festivo o regálaselo a esa estrella brillante de tu vida.\r\n\r\nAlto :   1,49\r\n\r\nMetal :  Plata Esterlina\r\n\r\nAncho :  1,22\r\n\r\nTema :  Símbolos y Naturaleza\r\n\r\nColor :  Plata\r\n\r\nPiedra : Zirconia cúbica\r\n\r\nProfundidad :  0,23', 380000.00, 56, 'accesorios', '', '45 cm', 'Plata', 4, 1),
-(35, '0120012', 'Pantalón Pinzas Hebilla', 'Pantalón de talle pequeño con detalle de pinza en la cintura en color plata.\r\n\r\nComposición\r\nEXTERIOR\r\n\r\n70% poliéster\r\n24% viscosa\r\n6% elastano\r\n\r\nCUIDADOS\r\nCuidar de tus prendas es una manera de alargar su vida útil. Sigue las instrucciones de cuidado y lava tus prendas solo cuando sea necesario. Reduciendo los lavados y los secados alargamos la vida de nuestras prendas y reducimos el consumo de agua y energía.\r\n\r\nLAVAR A MAQUINA MAX. 30ºC. CENTRIFUGADO CORTO\r\n\r\nNO USAR LEJÍA / BLANQUEADOR\r\n\r\nPLANCHAR MAXIMO 110 º C \r\n\r\nNO LIMPIEZA EN SECO\r\n\r\nNO USAR SECADORA', 90000.00, 54, 'pantalones', '', 'XS, S, M, L', 'Negro, Gris', 3, 3),
-(37, '0130013', 'Bolso Efecto Acharolado', 'Bolso de hombro alargado en efecto acharolado. Asa de hombro. Detalle de bordes en contraste de color. Bolsillo interior con cremallera. Cierre mediante solapa y botón imantado.\r\n\r\nCOMPOSICIÓN\r\n\r\nEXTERIOR\r\n100% poliuretano\r\n\r\nFORRO\r\n100% poliéster\r\nCUIDADOS\r\n\r\nCuidar de tus prendas es cuidar del medioambiente.\r\nAcciones simples como limpiar los artículos con un paño de algodón seco o un cepillo suave, según las características del producto, pueden ayudarnos a cuidarlos. Siempre que sea posible, intenta usar productos respetuosos con el medioambiente. \r\n\r\nGuía para el cuidado de la ropa\r\nNo lavar\r\n\r\nNo usar lejía / blanqueador\r\n\r\nNo planchar\r\n\r\nNo limpieza en seco\r\n\r\nNo usar secadora', 120000.00, 34, 'bolsos', '', 'U', 'Azul', 2, 3),
-(38, '0140014', 'Collar de plata y perlas', 'Collar TOUS Basic de plata de primera ley y perlas cultivadas de agua dulce en distinto tamaño. Tamaño perlas cultivadas: 4,5 a 10 mm. Longitud collar: 42 cm. Cierre mosquetón con detalle oso.\r\n\r\nGuardar en su estuche original sin que entre en contacto con otras joyas para evitar roces o ralladuras. Evite el contacto con líquidos, productos químicos o cosméticos, así como los cambios de temperatura extremos y golpes.\r\n\r\nEs recomendable hacer una revisión periódica del engaste de las joyas con gema, especialmente las sortijas y pulseras, así como el enhebrado de collares de perlas o gemas.', 120000.00, 43, 'accesorios', '', '45 cm', 'Plata', 4, 1);
+INSERT INTO `productos` (`id`, `codigo_producto`, `nombre_producto`, `descripcion_producto`, `valor_producto`, `imagen_producto`, `tallas_disponibles`, `colores_disponibles`, `marca_id`, `proveedor_id`, `descuento_id`, `categoria_id`) VALUES
+(22, '01001', 'Abrigo Largo', 'Abrigo confeccionado con lana. \r\nCuello solapa y manga larga. Bolsillos delanteros de vivo. \r\nBajo con abertura en espalda. Cierre con cinturón del mismo tejido.\r\n\r\nEXTERIOR\r\n50% lana\r\n30% poliéster\r\n10% acrílico\r\n5% otras fibras\r\n5% poliamida\r\n\r\nFORRO\r\n100% acetato\r\nQue contiene al menos:\r\n\r\nEXTERIOR\r\n5% poliamida reciclada certificada RCS\r\n50% lana reciclada certificada RCS\r\n30% poliéster reciclado certificado RCS\r\n10% acrílico reciclado certificado RCS\r\n\r\nMATERIALES CERTIFICADOS\r\nPOLIAMIDA RECICLADA CERTIFICADA RCS\r\nEsta fibra se fabrica a partir de residuos de poliamida y otros productos de desecho, como las redes de pesca. Transformar los residuos en nuevos materiales ayuda a limitar la extracción de materias primas. Está certificada conforme al Recycled Claim Standard  (RCS), que verifica el contenido reciclado y hace un seguimiento desde el origen hasta el producto final.\r\nCertificado por Intertek 193341\r\n\r\nLANA RECICLADA CERTIFICADA RCS\r\nEste material se fabrica a partir de residuos textiles reciclados y prendas usadas. Transformar los residuos en nuevos materiales ayuda a limitar la extracción de materias primas. Cuenta con la certificación Recycled Claim Standard (RCS), que verifica el contenido reciclado y hace un seguimiento desde el origen hasta el producto final.\r\nCertificado por Intertek 193341\r\n\r\nPOLIÉSTER RECICLADO CERTIFICADO RCS\r\nActualmente, el poliéster reciclado se fabrica principalmente a partir de residuos de plástico PET. Se trata de un tipo de plástico muy utilizado en diversos artículos, como las botellas de plástico. El uso de materiales reciclados ayuda a limitar la producción de fibra de poliéster virgen. Está certificado según el Recycled Claim Standard  (RCS), que verifica el contenido reciclado y hace un seguimiento desde el origen hasta el producto final.\r\nCertificado por Intertek 193341\r\n\r\nACRÍLICO RECICLADO CERTIFICADO RCS\r\nEste material se fabrica a partir de residuos acrílicos reciclados procedentes de otros procesos de producción. Transformar los residuos en nuevos materiales ayuda a limitar la extracción de materias primas. Cuenta con la certificación Recycled Claim Standard (RCS), que verifica el contenido reciclado y hace un seguimiento desde el origen hasta el producto final.\r\nCertificado por Intertek 193341\r\n\r\nCUIDADOS\r\nCuidar de tus prendas es cuidar del medioambiente.\r\nPara mantener limpias tus chaquetas y abrigos sólo tienes que ventilarlas y pasarles un paño o un cepillo para la ropa. Si la limpieza en seco es necesaria intenta buscar tintorerías que utilicen tecnologías respetuosas con el medioambiente. \r\n\r\nGuía para el cuidado de la ropa\r\nNo lavar\r\nNo usar lejía / blanqueador\r\nPlanchar máximo 110ºC \r\nLim.Seco tetracloroetileno\r\nNo usar secadora', 699000.00, '', 'S,M,L,XL', 'Gris,Café,Negro', 3, 1, 4, 1),
+(24, '02002', 'Chaqueta Volantes', 'Chaqueta de escote pico y manga larga. Detalle de volantes a tono. Cierre frontal con botones.\r\n\r\nTEJIDO PRINCIPAL\r\n 99% algodón,\r\n  1% elastano.\r\n                    \r\nADORNOS\r\n 56% poliéster,\r\n 44% algodón.\r\n\r\nCUIDADOS\r\nCuidar de tus prendas es cuidar del medioambiente.\r\nPara mantener limpias tus chaquetas y abrigos sólo tienes que ventilarlas y pasarles un paño o un cepillo para la ropa. Este proceso es más delicado con los tejidos y además evita el consumo de agua y energía de los procesos de lavado. \r\n\r\nGuía para el cuidado de la ropa\r\n\r\nLavar a máquina max. 30ºC. Centrifugado corto\r\nNo usar lejía / blanqueador\r\nPlanchar máximo 150 º C\r\nLim.Seco tetracloroetileno\r\nSe puede usar secadora temperatura reducida', 80000.00, '', 'XS,   S,   M,    L,  XL', 'Crudo', 2, 1, NULL, 3),
+(25, '03003', 'Pantalón Flare', 'Pantalón de tiro alto confeccionado en tejido de punto elástico y flexible con trama compacta, mullida y opaca. Cintura elástica ajustable con cordones. Detalle de costura marcada en delantero. Bajo acabado flare.\r\n                 \r\nEXTERIOR\r\n75% algodón\r\n17% poliéster\r\n8% elastano\r\n\r\nCUIDADOS\r\nCuidar de tus prendas es cuidar del medioambiente\r\nLos lavados a bajas temperaturas y los programas de centrifugado suaves son más delicados con las prendas, ayudando a mantener el color, la forma y la estructura del tejido. Al mismo tiempo, reduce el consumo de energía que se utiliza en los procesos de cuidado. \r\n\r\nGuía para el cuidado de la ropa\r\n\r\nLavar a máquina max. 30ºC. Centrifugado corto\r\nNo usar lejía / blanqueador\r\nPlanchar máximo 110ºC \r\nNo limpieza en seco\r\nNo usar secadora', 200000.00, '', 'XS,   S,   M,    L,  XL', 'Negro, Crudo, Azul medio, Marron', 2, 3, NULL, 4),
+(26, '04004', 'Vestido Mini  Satinado', 'Vestido de escote redondo y tirantes anchos. Detalle de abertura en espalda. Cierre lateral con\r\n cremallera oculta en costura\r\n\r\nEXTERIOR\r\n97% poliéster\r\n3% elastano\r\nQue contiene al menos:\r\n\r\nEXTERIOR\r\n97% poliéster reciclado certificado RCS\r\n\r\nMATERIALES CERTIFICADOS\r\nPOLIÉSTER RECICLADO CERTIFICADO RCS\r\nActualmente, el poliéster reciclado se fabrica principalmente a partir de residuos de plástico PET. Se trata de un tipo de plástico muy utilizado en diversos artículos, como las botellas de plástico. El uso de materiales reciclados ayuda a limitar la producción de fibra de poliéster virgen. Está certificado según el Recycled Claim Standard  (RCS), que verifica el contenido reciclado y hace un seguimiento desde el origen hasta el producto final.\r\n\r\nCertificado por Intertek 193341', 150000.00, '', 'XS,   S,   M,    L', 'Rojo', 2, 1, NULL, 5),
+(27, '05005', 'Bolso Shopper', 'Bolso formato shopper, Asa de hombro, Detalle de colgador, Bolsillo interior maxi y Cierre mediante imán.\r\n\r\nAlto x Ancho x Fondo: 29,5 x 36,5 x 12.\r\n\r\nEXTERIOR\r\n100% poliuretano\r\n\r\n FORRO\r\n 65% poliéster,\r\n 35% algodón.\r\n\r\nCUIDADOS\r\nCuidar de tus prendas es cuidar del medioambiente.\r\nAcciones simples como limpiar los artículos con un paño de algodón seco o un cepillo suave, según las características del producto, pueden ayudarnos a cuidarlos. Siempre que sea posible, intenta usar productos respetuosos con el medioambiente. \r\n\r\nGuía para el cuidado de la ropa\r\n\r\nNo lavar\r\nNo usar lejía / blanqueador\r\nNo planchar\r\nNo limpieza en seco\r\nNo usar secadora', 190000.00, '', 'Unica', 'Negro,  Cafe', 2, 1, NULL, 6),
+(28, '06006', 'Saco Cremallera Cuello', 'Saco de cuello subido con cierre frontal de cremallera, Manga larga y Acabados en rib.\r\n\r\nEXTERIOR\r\nTEJIDO PRINCIPAL\r\n78% algodón\r\n22% poliéster\r\n\r\nTEJIDO SECUNDARIO\r\n100% algodón\r\nQue contiene al menos:\r\nEXTERIOR\r\nTEJIDO PRINCIPAL\r\n78% algodón de cultivo orgánico certificado OCS\r\n22% poliéster reciclado certificado RCS\r\n\r\nTEJIDO SECUNDARIO\r\n100% algodón de cultivo orgánico certificado OCS\r\n\r\nMATERIALES CERTIFICADOS\r\nPOLIÉSTER RECICLADO CERTIFICADO RCS\r\nActualmente, el poliéster reciclado se fabrica principalmente a partir de residuos de plástico PET. Se trata de un tipo de plástico muy utilizado en diversos artículos, como las botellas de plástico. El uso de materiales reciclados ayuda a limitar la producción de fibra de poliéster virgen. Está certificado según el Recycled Claim Standard  (RCS), que verifica el contenido reciclado y hace un seguimiento desde el origen hasta el producto final.\r\nCertificado por Intertek 193341\r\n\r\nALGODÓN DE CULTIVO ORGÁNICO CERTIFICADO OCS\r\nEsta fibra se produce sin utilizar fertilizantes ni pesticidas artificiales y se cultiva a partir de semillas que no han sido modificadas genéticamente. Actualmente trabajamos con el Organic Content Standard (OCS) que supervisa el proceso desde el origen hasta el producto final.\r\nCertificado por Intertek 193341\r\n\r\nCUIDADOS\r\nCuidar de tus prendas es cuidar del medioambiente\r\nLos lavados a bajas temperaturas y los programas de centrifugado suaves son más delicados con las prendas, ayudando a mantener el color, la forma y la estructura del tejido. Al mismo tiempo, reduce el consumo de energía que se utiliza en los procesos de cuidado. \r\n\r\nGuía para el cuidado de la ropa\r\n\r\nLavar a máquina max. 30ºC. Centrifugado corto\r\nNo usar lejía / blanqueador\r\nPlanchar máximo 110ºC \r\nNo limpieza en seco\r\nNo usar secadora', 110000.00, '', 'XS,   S,   M,    L,  XL, XXL', 'Negro,  Blanco roto,  Gris,  Marron', 2, 1, 1, 7),
+(29, '07007', 'Polo Bordado Print', 'Camiseta tipo polo con estampado \"class of 65-scholl Henitage\"\r\n\r\nEXTERIOR\r\n100% algodón\r\nQue contiene al menos:\r\n\r\nEXTERIOR\r\n20% ALGODÓN RECICLADO CERTIFICADO RCS\r\nMATERIALES CERTIFICADOS\r\nALGODÓN RECICLADO CERTIFICADO RCS\r\nEsta fibra se fabrica a partir de residuos textiles de algodón reciclado. El uso de materiales reciclados ayuda a limitar el consumo de materias primas. Está certificada conforme al Recycled Claim Standard (RCS), que verifica el contenido reciclado y hace un seguimiento desde el origen hasta el producto final.\r\n\r\nCertificado por Intertek 193341.\r\n\r\nCUIDADOS\r\nCuidar de tus prendas es una manera de alargar su vida útil. Sigue las instrucciones de cuidado y lava tus prendas solo cuando sea necesario. Reduciendo los lavados y los secados alargamos la vida de nuestras prendas y reducimos el consumo de agua y energía.\r\n\r\nLAVAR A MAQUINA MAX. 30ºC. CENTRIFUGADO CORTO\r\nNO USAR LEJÍA / BLANQUEADOR\r\nPLANCHAR MAXIMO 110 º C \r\nNO LIMPIEZA EN SECO\r\nNO USAR SECADORA\r\nLAVAR AL REVÉS\r\nPLANCHAR AL REVES', 149900.00, '', 'XS,   S,   M,    L,  XL', 'Azul Oscuro', 2, 1, NULL, 8),
+(30, '08008', 'Pantalón Baggy Cargo', 'Pantalon tipo cargo oversize\r\n\r\nEXTERIOR\r\n100% algodón\r\n\r\nQue contiene al menos:\r\n\r\nEXTERIOR\r\n25% ALGODÓN RECICLADO CERTIFICADO RCS\r\n25% ALGODÓN DE CULTIVO ORGÁNICO CERTIFICADO OCS\r\nMATERIALES CERTIFICADOS\r\nALGODÓN RECICLADO CERTIFICADO RCS\r\nEsta fibra se fabrica a partir de residuos textiles de algodón reciclado. El uso de materiales reciclados ayuda a limitar el consumo de materias primas. Está certificada conforme al Recycled Claim Standard (RCS), que verifica el contenido reciclado y hace un seguimiento desde el origen hasta el producto final.\r\n\r\nCertificado por Intertek 193341.\r\n\r\nALGODÓN DE CULTIVO ORGÁNICO CERTIFICADO OCS\r\nEsta fibra se produce sin utilizar fertilizantes ni pesticidas artificiales y se cultiva a partir de semillas que no han sido modificadas genéticamente. Actualmente trabajamos con el Organic Content Standard (OCS) que supervisa el proceso desde el origen hasta el producto final.\r\n\r\nCertificado por Intertek 193341.\r\n\r\nCUIDADOS\r\nCuidar de tus prendas es una manera de alargar su vida útil. Sigue las instrucciones de cuidado y lava tus prendas solo cuando sea necesario. Reduciendo los lavados y los secados alargamos la vida de nuestras prendas y reducimos el consumo de agua y energía.\r\n\r\nLAVAR A MAQUINA MAX. 40ºC CENTRIFUGADO CORTO\r\nNO USAR LEJÍA / BLANQUEADOR\r\nPLANCHAR MAXIMO 150 º C\r\nSE PUEDE USAR SECADORA TEMPERATURA REDUCIDA\r\nLAVAR POR SEPARADO\r\nLIMPIEZA EN SECO TETRACLOROETILENO', 190000.00, '', '34,   36,  38,  40,   42,  44', 'Negro,  Gris,   Marron', 2, 1, NULL, 4),
+(31, '09009', 'Falda Mini Lentejuelas', 'Falda mini de tiro medio. Detalle aplicación lentejuelas. Forro interior combinado. Cierre lateral con cremallera oculta en costura.', 199900.00, '', 'XS, S, M, L, XL', 'Plata', 2, 1, NULL, 9),
+(32, '0100010', 'Jeans  Wide Tiro Alto', 'Jeans de tiro alto con cinco bolsillos. Efecto lavado. Pernera ancha. Cierre frontal con cremallera y botón.\r\n\r\nCOMPOSICIÓN\r\n\r\nEXTERIOR\r\n100% algodón\r\n\r\nALGODÓN DE CULTIVO ORGÁNICO CERTIFICADO OCS\r\nEsta fibra se produce sin utilizar fertilizantes ni pesticidas artificiales y se cultiva a partir de semillas que no han sido modificadas genéticamente. Actualmente trabajamos con el Organic Content Standard (OCS) que supervisa el proceso desde el origen hasta el producto final.\r\n\r\nCUIDADOS\r\nCuidar de tus prendas es cuidar del medioambiente\r\nLos lavados a bajas temperaturas y los programas de centrifugado suaves son más delicados con las prendas, ayudando a mantener el color, la forma y la estructura del tejido. Al mismo tiempo, reduce el consumo de energía que se utiliza en los procesos de cuidado. \r\n\r\nGuía para el cuidado de la ropa\r\n\r\nLavar a máquina max. 40ºC centrifugado corto\r\nNo usar lejía / blanqueador\r\nPlanchar máximo 200 º C\r\nNo limpieza en seco\r\nSe puede usar secadora temperatura reducida', 150000.00, '', 'XS,   S,   M,    L,  XL', 'Azul medio', 3, 1, NULL, 10),
+(34, '0110011', 'Collar Estrella Polar', 'Ilumina tu look con nuestro Collar Estrella Polar en plata de primera ley. Este collar presenta el simbólico diseño de la estrella polar con brillantes circonitas cúbicas transparentes colgando de una cadena de cable y aportará un brillo celestial a tu look con un simbolismo significativo. \r\nLa cadena se puede ajustar a tres longitudes diferentes para adaptarla a tu estilo. \r\n\r\nLa Estrella Polar, que sirve de brújula en momentos de incertidumbre, nos guía hacia un futuro más brillante y representa nuestras esperanzas y anhelos. Póntelos para dar brillo a cualquier look festivo o regálaselo a esa estrella brillante de tu vida.\r\n\r\nAlto :   1,49\r\n\r\nMetal :  Plata Esterlina\r\n\r\nAncho :  1,22\r\n\r\nTema :  Símbolos y Naturaleza\r\n\r\nColor :  Plata\r\n\r\nPiedra : Zirconia cúbica\r\n\r\nProfundidad :  0,23', 380000.00, '', '45cm', 'Plata', 4, 1, NULL, 11),
+(35, '0120012', 'Pantalón Pinzas Hebilla', 'Pantalón de talle pequeño con detalle de pinza en la cintura en color plata.\r\n\r\nComposición\r\nEXTERIOR\r\n\r\n70% poliéster\r\n24% viscosa\r\n6% elastano\r\n\r\nCUIDADOS\r\nCuidar de tus prendas es una manera de alargar su vida útil. Sigue las instrucciones de cuidado y lava tus prendas solo cuando sea necesario. Reduciendo los lavados y los secados alargamos la vida de nuestras prendas y reducimos el consumo de agua y energía.\r\n\r\nLAVAR A MAQUINA MAX. 30ºC. CENTRIFUGADO CORTO\r\n\r\nNO USAR LEJÍA / BLANQUEADOR\r\n\r\nPLANCHAR MAXIMO 110 º C \r\n\r\nNO LIMPIEZA EN SECO\r\n\r\nNO USAR SECADORA', 90000.00, '', 'XS, S, M, L', 'Negro, Gris', 3, 3, NULL, 4),
+(37, '0130013', 'Bolso Efecto Acharolado', 'Bolso de hombro alargado en efecto acharolado. Asa de hombro. Detalle de bordes en contraste de color. Bolsillo interior con cremallera. Cierre mediante solapa y botón imantado.\r\n\r\nCOMPOSICIÓN\r\n\r\nEXTERIOR\r\n100% poliuretano\r\n\r\nFORRO\r\n100% poliéster\r\nCUIDADOS\r\n\r\nCuidar de tus prendas es cuidar del medioambiente.\r\nAcciones simples como limpiar los artículos con un paño de algodón seco o un cepillo suave, según las características del producto, pueden ayudarnos a cuidarlos. Siempre que sea posible, intenta usar productos respetuosos con el medioambiente. \r\n\r\nGuía para el cuidado de la ropa\r\nNo lavar\r\n\r\nNo usar lejía / blanqueador\r\n\r\nNo planchar\r\n\r\nNo limpieza en seco\r\n\r\nNo usar secadora', 120000.00, '', 'U', 'Azul', 2, 3, 10, 6);
 
 -- --------------------------------------------------------
 
@@ -629,6 +864,130 @@ INSERT INTO `proveedor_marca` (`id`, `proveedor_id`, `marca_id`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `socialaccount_socialaccount`
+--
+
+CREATE TABLE `socialaccount_socialaccount` (
+  `id` int NOT NULL,
+  `provider` varchar(200) NOT NULL,
+  `uid` varchar(191) NOT NULL,
+  `last_login` datetime(6) NOT NULL,
+  `date_joined` datetime(6) NOT NULL,
+  `extra_data` json NOT NULL,
+  `user_id` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `socialaccount_socialaccount`
+--
+
+INSERT INTO `socialaccount_socialaccount` (`id`, `provider`, `uid`, `last_login`, `date_joined`, `extra_data`, `user_id`) VALUES
+(1, 'google', '106725025692947422168', '2025-11-23 00:51:50.585386', '2025-10-30 21:20:15.593276', '{\"aud\": \"644732024323-bf511t6ae2vc6v0uqjaqmgmd47o7mf6q.apps.googleusercontent.com\", \"azp\": \"644732024323-bf511t6ae2vc6v0uqjaqmgmd47o7mf6q.apps.googleusercontent.com\", \"exp\": 1763862711, \"iat\": 1763859111, \"iss\": \"https://accounts.google.com\", \"sub\": \"106725025692947422168\", \"name\": \"sebastian carrillo gutierrez\", \"email\": \"sebastiancarrillo400@gmail.com\", \"at_hash\": \"2gRBoFHDU0mFJo9QjTSz1Q\", \"picture\": \"https://lh3.googleusercontent.com/a/ACg8ocLl0ExeH33pVxbxmyvvMRGnV7Fi69_-Fg2CpWL-WDnccALakWI=s96-c\", \"given_name\": \"sebastian\", \"family_name\": \"carrillo gutierrez\", \"email_verified\": true}', 1),
+(2, 'google', '100335040671003090933', '2025-11-23 15:46:16.347501', '2025-11-23 15:35:31.153429', '{\"aud\": \"644732024323-bf511t6ae2vc6v0uqjaqmgmd47o7mf6q.apps.googleusercontent.com\", \"azp\": \"644732024323-bf511t6ae2vc6v0uqjaqmgmd47o7mf6q.apps.googleusercontent.com\", \"exp\": 1763916378, \"iat\": 1763912778, \"iss\": \"https://accounts.google.com\", \"sub\": \"100335040671003090933\", \"name\": \"sebastian largo\", \"email\": \"sebastianlargogutierrez@gmail.com\", \"at_hash\": \"rkyATbHaiMSqT1fLogvYfg\", \"picture\": \"https://lh3.googleusercontent.com/a/ACg8ocJiGuTqOeQ1v6VWp48jGJGbHgPj2CDPwVffYVwreNimib6xcw=s96-c\", \"given_name\": \"sebastian\", \"family_name\": \"largo\", \"email_verified\": true}', 2);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `socialaccount_socialapp`
+--
+
+CREATE TABLE `socialaccount_socialapp` (
+  `id` int NOT NULL,
+  `provider` varchar(30) NOT NULL,
+  `name` varchar(40) NOT NULL,
+  `client_id` varchar(191) NOT NULL,
+  `secret` varchar(191) NOT NULL,
+  `key` varchar(191) NOT NULL,
+  `provider_id` varchar(200) NOT NULL,
+  `settings` json NOT NULL DEFAULT (_utf8mb4'{}')
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `socialaccount_socialapp_sites`
+--
+
+CREATE TABLE `socialaccount_socialapp_sites` (
+  `id` bigint NOT NULL,
+  `socialapp_id` int NOT NULL,
+  `site_id` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `socialaccount_socialtoken`
+--
+
+CREATE TABLE `socialaccount_socialtoken` (
+  `id` int NOT NULL,
+  `token` longtext NOT NULL,
+  `token_secret` longtext NOT NULL,
+  `expires_at` datetime(6) DEFAULT NULL,
+  `account_id` int NOT NULL,
+  `app_id` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `stock`
+--
+
+CREATE TABLE `stock` (
+  `id` int NOT NULL,
+  `producto_id` int NOT NULL,
+  `cantidad` int UNSIGNED DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `stock`
+--
+
+INSERT INTO `stock` (`id`, `producto_id`, `cantidad`) VALUES
+(1, 22, 0),
+(2, 24, 9),
+(3, 25, 3),
+(4, 26, 14),
+(5, 27, 8),
+(6, 28, 20),
+(7, 29, 0),
+(8, 30, 7),
+(9, 31, 55),
+(10, 32, 6),
+(11, 34, 1),
+(12, 35, 8),
+(13, 37, 23);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `token_recuperacion`
+--
+
+CREATE TABLE `token_recuperacion` (
+  `id` bigint NOT NULL,
+  `token` varchar(255) NOT NULL,
+  `creado_en` datetime(6) NOT NULL,
+  `expira_en` datetime(6) NOT NULL,
+  `usado` tinyint(1) NOT NULL,
+  `usuario_id` bigint NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Volcado de datos para la tabla `token_recuperacion`
+--
+
+INSERT INTO `token_recuperacion` (`id`, `token`, `creado_en`, `expira_en`, `usado`, `usuario_id`) VALUES
+(1, '47f2ff38-51f0-450d-8344-1c5c9af2437c', '2025-11-23 14:37:24.754149', '2025-11-24 14:37:24.741893', 0, 88),
+(2, 'e86f3b4a-7abc-4469-902b-6b098c4ba82b', '2025-11-23 14:37:26.817317', '2025-11-24 14:37:26.816698', 1, 88),
+(3, 'ce4f281f-7988-4d92-ae33-2d12bebb55e8', '2025-11-23 14:45:56.797118', '2025-11-24 14:45:56.794048', 1, 88),
+(4, '55460d88-c0d5-4d30-b47c-565f4b24cd80', '2025-11-23 15:35:50.012813', '2025-11-24 15:35:50.011346', 1, 89);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `usuarios`
 --
 
@@ -670,11 +1029,27 @@ INSERT INTO `usuarios` (`id`, `nombre`, `correo`, `imagen_perfil`, `contraseña`
 (49, 'veronica', 'veroh@gmail.com', '', 'pbkdf2_sha256$870000$OOkJ40HbXpWXYa80JCuou5$RG1yMwj/xc/pBazkCHe4lo8zQOoRE7I2HCZiTqPmOgQ=', 'usuario', '2025-09-18 21:55:18'),
 (58, 'Juan perez', 'juan22@gmail.com', '', 'pbkdf2_sha256$870000$wmxodn77lrjXer5KpFPFx0$NWFaJ36nGmlSpFEeUTnIB+Hq8Y3tUYn/tU7XjR57y8A=', 'admin', '2025-09-18 21:55:18'),
 (59, 'Samuel Torres', 'samuel@gmail.com', 'perfiles/b_cxgm2XA.jpg', 'pbkdf2_sha256$870000$VYa6kqNpMjqPTGIrWCFkwV$ezkXSYTECAmTdJFO36jnkchhGz6+bXAydICRhPqju78=', 'usuario', '2025-09-18 21:55:18'),
-(60, 'jose dias', 'jose67@gmail.com', '', 'pbkdf2_sha256$870000$EJ9E3K8YywAe2nTepjW5Hd$SrOpGOy1wBfXuURLo7FhdyVbrsWcm2R3ZDta/C+qVYI=', 'usuario', '2025-09-18 21:55:18');
+(67, 'choco', 'choco@gmail.com', 'perfiles/Oh.jpeg', 'pbkdf2_sha256$1000000$l0kNRlvyM0cot3ffNSJfyH$o3++HD597MCnW1+KxVQCCUEcnRsyqLo8MdmdPYZ0wuI=', 'admin', '2025-11-08 22:34:33');
 
 --
 -- Índices para tablas volcadas
 --
+
+--
+-- Indices de la tabla `account_emailaddress`
+--
+ALTER TABLE `account_emailaddress`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `account_emailaddress_user_id_email_987c8728_uniq` (`user_id`,`email`),
+  ADD KEY `account_emailaddress_email_03be32b2` (`email`);
+
+--
+-- Indices de la tabla `account_emailconfirmation`
+--
+ALTER TABLE `account_emailconfirmation`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `key` (`key`),
+  ADD KEY `account_emailconfirm_email_address_id_5b7f8c58_fk_account_e` (`email_address_id`);
 
 --
 -- Indices de la tabla `auth_group`
@@ -734,6 +1109,13 @@ ALTER TABLE `core_blog`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indices de la tabla `core_factura`
+--
+ALTER TABLE `core_factura`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `invoice_id` (`invoice_id`);
+
+--
 -- Indices de la tabla `core_mensaje`
 --
 ALTER TABLE `core_mensaje`
@@ -749,6 +1131,12 @@ ALTER TABLE `core_producto`
 -- Indices de la tabla `core_usuario`
 --
 ALTER TABLE `core_usuario`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `descuentos`
+--
+ALTER TABLE `descuentos`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -771,6 +1159,13 @@ ALTER TABLE `django_content_type`
 --
 ALTER TABLE `django_migrations`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `django_site`
+--
+ALTER TABLE `django_site`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `django_site_domain_a2e37b91_uniq` (`domain`);
 
 --
 -- Indices de la tabla `imagenproducto`
@@ -798,7 +1193,9 @@ ALTER TABLE `pedidos`
 ALTER TABLE `productos`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_marca` (`marca_id`),
-  ADD KEY `fk_proveedor` (`proveedor_id`);
+  ADD KEY `fk_proveedor` (`proveedor_id`),
+  ADD KEY `fk_productos_categoria` (`categoria_id`),
+  ADD KEY `idx_producto_descuento` (`descuento_id`);
 
 --
 -- Indices de la tabla `proveedor`
@@ -815,6 +1212,50 @@ ALTER TABLE `proveedor_marca`
   ADD KEY `marca_id` (`marca_id`);
 
 --
+-- Indices de la tabla `socialaccount_socialaccount`
+--
+ALTER TABLE `socialaccount_socialaccount`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `socialaccount_socialaccount_provider_uid_fc810c6e_uniq` (`provider`,`uid`),
+  ADD KEY `socialaccount_socialaccount_user_id_8146e70c_fk_auth_user_id` (`user_id`);
+
+--
+-- Indices de la tabla `socialaccount_socialapp`
+--
+ALTER TABLE `socialaccount_socialapp`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `socialaccount_socialapp_sites`
+--
+ALTER TABLE `socialaccount_socialapp_sites`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `socialaccount_socialapp_sites_socialapp_id_site_id_71a9a768_uniq` (`socialapp_id`,`site_id`),
+  ADD KEY `socialaccount_socialapp_sites_site_id_2579dee5_fk_django_site_id` (`site_id`);
+
+--
+-- Indices de la tabla `socialaccount_socialtoken`
+--
+ALTER TABLE `socialaccount_socialtoken`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `socialaccount_socialtoken_app_id_account_id_fca4e0ac_uniq` (`app_id`,`account_id`),
+  ADD KEY `socialaccount_social_account_id_951f210e_fk_socialacc` (`account_id`);
+
+--
+-- Indices de la tabla `stock`
+--
+ALTER TABLE `stock`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_stock_producto` (`producto_id`);
+
+--
+-- Indices de la tabla `token_recuperacion`
+--
+ALTER TABLE `token_recuperacion`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `token` (`token`);
+
+--
 -- Indices de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
@@ -824,6 +1265,18 @@ ALTER TABLE `usuarios`
 --
 -- AUTO_INCREMENT de las tablas volcadas
 --
+
+--
+-- AUTO_INCREMENT de la tabla `account_emailaddress`
+--
+ALTER TABLE `account_emailaddress`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de la tabla `account_emailconfirmation`
+--
+ALTER TABLE `account_emailconfirmation`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `auth_group`
@@ -841,13 +1294,13 @@ ALTER TABLE `auth_group_permissions`
 -- AUTO_INCREMENT de la tabla `auth_permission`
 --
 ALTER TABLE `auth_permission`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
 
 --
 -- AUTO_INCREMENT de la tabla `auth_user`
 --
 ALTER TABLE `auth_user`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `auth_user_groups`
@@ -865,13 +1318,19 @@ ALTER TABLE `auth_user_user_permissions`
 -- AUTO_INCREMENT de la tabla `categoria`
 --
 ALTER TABLE `categoria`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT de la tabla `core_blog`
 --
 ALTER TABLE `core_blog`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+--
+-- AUTO_INCREMENT de la tabla `core_factura`
+--
+ALTER TABLE `core_factura`
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `core_mensaje`
@@ -892,6 +1351,12 @@ ALTER TABLE `core_usuario`
   MODIFY `id` bigint NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `descuentos`
+--
+ALTER TABLE `descuentos`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
 -- AUTO_INCREMENT de la tabla `django_admin_log`
 --
 ALTER TABLE `django_admin_log`
@@ -901,19 +1366,25 @@ ALTER TABLE `django_admin_log`
 -- AUTO_INCREMENT de la tabla `django_content_type`
 --
 ALTER TABLE `django_content_type`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT de la tabla `django_migrations`
 --
 ALTER TABLE `django_migrations`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+
+--
+-- AUTO_INCREMENT de la tabla `django_site`
+--
+ALTER TABLE `django_site`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `imagenproducto`
 --
 ALTER TABLE `imagenproducto`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=125;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=132;
 
 --
 -- AUTO_INCREMENT de la tabla `marca`
@@ -925,13 +1396,13 @@ ALTER TABLE `marca`
 -- AUTO_INCREMENT de la tabla `pedidos`
 --
 ALTER TABLE `pedidos`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=77;
 
 --
 -- AUTO_INCREMENT de la tabla `proveedor`
@@ -946,14 +1417,62 @@ ALTER TABLE `proveedor_marca`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
+-- AUTO_INCREMENT de la tabla `socialaccount_socialaccount`
+--
+ALTER TABLE `socialaccount_socialaccount`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de la tabla `socialaccount_socialapp`
+--
+ALTER TABLE `socialaccount_socialapp`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `socialaccount_socialapp_sites`
+--
+ALTER TABLE `socialaccount_socialapp_sites`
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `socialaccount_socialtoken`
+--
+ALTER TABLE `socialaccount_socialtoken`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `stock`
+--
+ALTER TABLE `stock`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+
+--
+-- AUTO_INCREMENT de la tabla `token_recuperacion`
+--
+ALTER TABLE `token_recuperacion`
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=92;
 
 --
 -- Restricciones para tablas volcadas
 --
+
+--
+-- Filtros para la tabla `account_emailaddress`
+--
+ALTER TABLE `account_emailaddress`
+  ADD CONSTRAINT `account_emailaddress_user_id_2c513194_fk_auth_user_id` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`);
+
+--
+-- Filtros para la tabla `account_emailconfirmation`
+--
+ALTER TABLE `account_emailconfirmation`
+  ADD CONSTRAINT `account_emailconfirm_email_address_id_5b7f8c58_fk_account_e` FOREIGN KEY (`email_address_id`) REFERENCES `account_emailaddress` (`id`);
 
 --
 -- Filtros para la tabla `auth_group_permissions`
@@ -1000,6 +1519,8 @@ ALTER TABLE `imagenproducto`
 --
 ALTER TABLE `productos`
   ADD CONSTRAINT `fk_marca` FOREIGN KEY (`marca_id`) REFERENCES `marca` (`id`),
+  ADD CONSTRAINT `fk_productos_categoria` FOREIGN KEY (`categoria_id`) REFERENCES `categoria` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_productos_descuento` FOREIGN KEY (`descuento_id`) REFERENCES `descuentos` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_proveedor` FOREIGN KEY (`proveedor_id`) REFERENCES `proveedor` (`id`);
 
 --
@@ -1008,6 +1529,32 @@ ALTER TABLE `productos`
 ALTER TABLE `proveedor_marca`
   ADD CONSTRAINT `proveedor_marca_ibfk_1` FOREIGN KEY (`proveedor_id`) REFERENCES `proveedor` (`id`),
   ADD CONSTRAINT `proveedor_marca_ibfk_2` FOREIGN KEY (`marca_id`) REFERENCES `marca` (`id`);
+
+--
+-- Filtros para la tabla `socialaccount_socialaccount`
+--
+ALTER TABLE `socialaccount_socialaccount`
+  ADD CONSTRAINT `socialaccount_socialaccount_user_id_8146e70c_fk_auth_user_id` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`);
+
+--
+-- Filtros para la tabla `socialaccount_socialapp_sites`
+--
+ALTER TABLE `socialaccount_socialapp_sites`
+  ADD CONSTRAINT `socialaccount_social_socialapp_id_97fb6e7d_fk_socialacc` FOREIGN KEY (`socialapp_id`) REFERENCES `socialaccount_socialapp` (`id`),
+  ADD CONSTRAINT `socialaccount_socialapp_sites_site_id_2579dee5_fk_django_site_id` FOREIGN KEY (`site_id`) REFERENCES `django_site` (`id`);
+
+--
+-- Filtros para la tabla `socialaccount_socialtoken`
+--
+ALTER TABLE `socialaccount_socialtoken`
+  ADD CONSTRAINT `socialaccount_social_account_id_951f210e_fk_socialacc` FOREIGN KEY (`account_id`) REFERENCES `socialaccount_socialaccount` (`id`),
+  ADD CONSTRAINT `socialaccount_social_app_id_636a42d7_fk_socialacc` FOREIGN KEY (`app_id`) REFERENCES `socialaccount_socialapp` (`id`);
+
+--
+-- Filtros para la tabla `stock`
+--
+ALTER TABLE `stock`
+  ADD CONSTRAINT `fk_stock_producto` FOREIGN KEY (`producto_id`) REFERENCES `productos` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
